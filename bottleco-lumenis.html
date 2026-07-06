@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOTTLECO LUMENIS — Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;1,9..144,400;1,9..144,500&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night: #0f1a16;
+    --night-card: #1c2b24;
+    --night-card-2: #223a30;
+    --dawn: #eef2ec;
+    --dawn-card: #ffffff;
+    --dawn-card-2: #e2e9de;
+    --amber: #e8a659;
+    --amber-soft: #f2c893;
+    --moss: #6b8f71;
+    --moss-deep: #46614c;
+    --bloom: #e8b4c8;
+    --ink-night: #e6ede7;
+    --ink-night-dim: #9db0a4;
+    --ink-dawn: #16261d;
+    --ink-dawn-dim: #5b6e5f;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    background:var(--night);
+    color:var(--ink-night);
+    font-family:'Sora', sans-serif;
+    overflow-x:hidden;
+    cursor:default;
+  }
+  ::selection{ background:var(--amber); color:var(--night); }
+
+  h1,h2,h3, .display{ font-family:'Fraunces', serif; font-weight:450; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+
+  a{ color:inherit; }
+
+  /* ---------- firefly cursor trail ---------- */
+  #fireflyLayer{
+    position:fixed; inset:0; pointer-events:none; z-index:9999;
+  }
+  .firefly{
+    position:absolute; width:6px; height:6px; border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 8px 2px var(--amber-soft), 0 0 18px 4px rgba(232,166,89,0.35);
+    opacity:0.9;
+    transform:translate(-50%,-50%);
+    animation:fireflyFade 1.1s ease-out forwards;
+  }
+  @keyframes fireflyFade{
+    0%{ opacity:0.85; transform:translate(-50%,-50%) scale(1); }
+    100%{ opacity:0; transform:translate(-50%,-50%) scale(0.3); }
+  }
+  .section-dawn .firefly{
+    background:var(--moss);
+    box-shadow:0 0 8px 2px rgba(107,143,113,0.5), 0 0 16px 3px rgba(107,143,113,0.25);
+  }
+
+  /* ---------- bloom on click ---------- */
+  .bloom-layer{ position:fixed; inset:0; pointer-events:none; z-index:9998; }
+  .bloom{
+    position:absolute; transform:translate(-50%,-50%) scale(0);
+    animation:bloomPop 1.6s cubic-bezier(.2,.9,.3,1) forwards;
+  }
+  @keyframes bloomPop{
+    0%{ transform:translate(-50%,-50%) scale(0) rotate(0deg); opacity:0; }
+    12%{ opacity:1; }
+    40%{ transform:translate(-50%,-50%) scale(1) rotate(8deg); opacity:1;}
+    100%{ transform:translate(-50%,-60%) scale(1) rotate(8deg); opacity:0; }
+  }
+
+  section{
+    position:relative;
+    padding: 7rem 8vw;
+    z-index:1;
+  }
+  @media (max-width: 760px){
+    section{ padding: 4.5rem 6vw; }
+  }
+
+  .section-night{ background:var(--night); color:var(--ink-night); }
+  .section-dawn{ background:var(--dawn); color:var(--ink-dawn); }
+
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:var(--amber);
+    display:flex; align-items:center; gap:0.6em;
+    margin-bottom:1.4rem;
+  }
+  .section-dawn .eyebrow{ color:var(--moss-deep); }
+  .eyebrow::before{
+    content:''; width:22px; height:1px; background:currentColor; display:inline-block;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    background:
+      radial-gradient(ellipse 70% 55% at 78% 82%, rgba(232,166,89,0.16), transparent 60%),
+      linear-gradient(180deg, #0a1310 0%, #0f1a16 45%, #14231c 100%);
+    padding-top:6rem;
+    padding-bottom:6rem;
+  }
+  .hero-ridge{
+    position:absolute; left:0; right:0; bottom:0; height:46%;
+    pointer-events:none;
+  }
+  .ridge-svg{ width:100%; height:100%; display:block; }
+
+  .hero-title{
+    font-size:clamp(2.6rem, 8vw, 6.2rem);
+    line-height:0.98;
+    margin:0 0 0.5rem 0;
+    color:var(--ink-night);
+  }
+  .hero-title em{
+    font-style:italic; color:var(--amber-soft); font-weight:400;
+  }
+  .hero-sub{
+    max-width:34ch;
+    font-size:1.05rem;
+    color:var(--ink-night-dim);
+    font-weight:300;
+    line-height:1.6;
+    margin-top:1.6rem;
+  }
+  .hero-meta{
+    margin-top:3.2rem;
+    display:flex; gap:2.4rem; flex-wrap:wrap;
+    font-family:'JetBrains Mono', monospace;
+    font-size:0.72rem; letter-spacing:0.06em;
+    color:var(--ink-night-dim);
+    text-transform:uppercase;
+  }
+  .hero-meta strong{ display:block; color:var(--amber-soft); font-size:0.68rem; margin-bottom:0.3rem; letter-spacing:0.18em; }
+
+  .lamp-dot{
+    position:absolute; width:14px; height:14px; border-radius:50%;
+    background:var(--amber);
+    box-shadow:0 0 20px 6px rgba(232,166,89,0.55), 0 0 60px 20px rgba(232,166,89,0.18);
+    animation:pulseLamp 3.2s ease-in-out infinite;
+  }
+  @keyframes pulseLamp{
+    0%,100%{ box-shadow:0 0 20px 6px rgba(232,166,89,0.5), 0 0 60px 20px rgba(232,166,89,0.15); }
+    50%{ box-shadow:0 0 28px 10px rgba(232,166,89,0.7), 0 0 80px 30px rgba(232,166,89,0.25); }
+  }
+
+  /* ---------- generic grid / cards ---------- */
+  .kicker-row{
+    display:flex; justify-content:space-between; align-items:flex-end; gap:2rem; flex-wrap:wrap;
+    margin-bottom:3rem;
+  }
+  h2.section-title{ font-size:clamp(1.9rem, 3.6vw, 3rem); margin:0; }
+  .section-lede{ max-width:46ch; font-weight:300; line-height:1.6; opacity:0.82; font-size:0.98rem; }
+
+  .grid{ display:grid; gap:1.4rem; }
+  .grid-2{ grid-template-columns:repeat(2,1fr); }
+  .grid-3{ grid-template-columns:repeat(3,1fr); }
+  .grid-4{ grid-template-columns:repeat(4,1fr); }
+  @media (max-width:820px){ .grid-2,.grid-3,.grid-4{ grid-template-columns:1fr; } }
+
+  .card{
+    background:var(--night-card);
+    border:1px solid rgba(232,166,89,0.12);
+    border-radius:14px;
+    padding:1.8rem;
+    position:relative;
+    transition:transform .35s ease, border-color .35s ease, background .35s ease;
+    cursor:pointer;
+  }
+  .card:hover{ transform:translateY(-4px); border-color:rgba(232,166,89,0.4); background:var(--night-card-2); }
+  .section-dawn .card{
+    background:var(--dawn-card); border:1px solid rgba(70,97,76,0.14);
+  }
+  .section-dawn .card:hover{ border-color:rgba(70,97,76,0.4); background:var(--dawn-card-2); }
+
+  .card .quote{ font-family:'Fraunces', serif; font-style:italic; font-size:1.12rem; line-height:1.5; font-weight:400; }
+  .card .who{ margin-top:1rem; font-family:'JetBrains Mono', monospace; font-size:0.72rem; letter-spacing:0.06em; color:var(--amber); text-transform:uppercase; }
+  .section-dawn .card .who{ color:var(--moss-deep); }
+
+  .bloom-hint{ position:absolute; bottom:0.9rem; right:1rem; font-size:0.65rem; opacity:0.35; font-family:'JetBrains Mono', monospace; letter-spacing:0.08em; }
+
+  /* persona */
+  .persona-wrap{ display:grid; grid-template-columns:1fr 1.15fr; gap:3rem; align-items:center; }
+  @media (max-width:820px){ .persona-wrap{ grid-template-columns:1fr; } }
+  .persona-tag{
+    display:inline-block; padding:0.3rem 0.9rem; border:1px solid var(--moss);
+    border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:0.68rem; letter-spacing:0.1em;
+    color:var(--moss); text-transform:uppercase; margin-bottom:1.2rem;
+  }
+  .persona-quote{ font-family:'Fraunces', serif; font-style:italic; font-size:1.5rem; line-height:1.4; color:var(--amber-soft); margin:1.2rem 0 0 0; }
+  .list-plain{ list-style:none; padding:0; margin:0.8rem 0 0 0; }
+  .list-plain li{ padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.06); font-weight:300; font-size:0.95rem; }
+  .section-dawn .list-plain li{ border-bottom:1px solid rgba(0,0,0,0.07); }
+
+  /* pain points numbered */
+  .pain-num{ font-family:'Fraunces', serif; font-size:2.2rem; color:var(--amber); font-style:italic; line-height:1; margin-bottom:0.6rem; display:block;}
+  .section-dawn .pain-num{ color:var(--moss-deep); }
+
+  /* product feature */
+  .bottle-diagram{ display:flex; justify-content:center; margin: 2rem 0 3rem; }
+  .feat-list{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:2.4rem; }
+  @media (max-width:820px){ .feat-list{ grid-template-columns:1fr; } }
+  .feat{ padding:1.2rem 1.4rem; border-left:2px solid var(--amber); background:rgba(232,166,89,0.05); border-radius:0 10px 10px 0; }
+  .feat b{ display:block; margin-bottom:0.3rem; font-size:0.98rem; }
+  .feat span{ font-size:0.86rem; opacity:0.75; font-weight:300; }
+
+  /* market table */
+  table.market{ width:100%; border-collapse:collapse; margin-top:1rem; }
+  table.market th, table.market td{ text-align:left; padding:0.85rem 1rem; font-size:0.92rem; }
+  table.market thead th{
+    font-family:'JetBrains Mono', monospace; font-size:0.68rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--amber); border-bottom:1px solid rgba(232,166,89,0.3); font-weight:500;
+  }
+  table.market tbody tr{ border-bottom:1px solid rgba(255,255,255,0.06); }
+  table.market tbody tr.highlight{ background:rgba(232,166,89,0.09); }
+  table.market td.price{ font-family:'JetBrains Mono', monospace; }
+
+  /* cogs */
+  .cogs-wrap{ display:grid; grid-template-columns:1fr 1.3fr; gap:3rem; align-items:center; }
+  @media (max-width:820px){ .cogs-wrap{ grid-template-columns:1fr; } }
+  .cogs-bar{ height:34px; border-radius:8px; overflow:hidden; display:flex; width:100%; margin-bottom:1.6rem; }
+  .cogs-seg{ height:100%; }
+  .cogs-legend{ display:flex; flex-direction:column; gap:0.6rem; font-size:0.88rem; }
+  .cogs-legend .row{ display:flex; align-items:center; gap:0.6rem; }
+  .swatch{ width:10px; height:10px; border-radius:3px; flex:none; }
+  .cogs-total{ font-family:'Fraunces', serif; font-size:2.6rem; font-style:italic; color:var(--amber-soft); margin-top:1rem; }
+
+  /* revenue tree */
+  .tree{ display:flex; align-items:stretch; gap:0; margin-top:2.4rem; flex-wrap:wrap; }
+  .tree-node{
+    flex:1; min-width:160px; padding:1.4rem 1.2rem; text-align:center;
+    background:var(--night-card); border-radius:12px; margin:0.4rem;
+    border:1px solid rgba(232,166,89,0.15);
+  }
+  .section-dawn .tree-node{ background:var(--dawn-card); border:1px solid rgba(70,97,76,0.15); }
+  .tree-node .k{ font-family:'JetBrains Mono', monospace; font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; opacity:0.6; margin-bottom:0.5rem; }
+  .tree-node .v{ font-family:'Fraunces', serif; font-size:1.3rem; font-style:italic; color:var(--amber-soft); }
+  .section-dawn .tree-node .v{ color:var(--moss-deep); }
+  .tree-node .sub{ font-size:0.72rem; opacity:0.55; margin-top:0.4rem; }
+  .arrow{ display:flex; align-items:center; padding:0 0.2rem; opacity:0.4; font-size:1.2rem; }
+
+  /* P&L table */
+  table.pnl{ width:100%; border-collapse:collapse; margin-top:1.6rem; font-family:'JetBrains Mono', monospace; font-size:0.82rem; }
+  table.pnl th, table.pnl td{ padding:0.7rem 0.8rem; text-align:right; }
+  table.pnl th:first-child, table.pnl td:first-child{ text-align:left; font-family:'Sora',sans-serif; }
+  table.pnl thead th{ color:var(--amber); border-bottom:1px solid rgba(232,166,89,0.3); font-weight:500; }
+  table.pnl tbody tr:nth-child(even){ background:rgba(255,255,255,0.03); }
+  .section-dawn table.pnl tbody tr:nth-child(even){ background:rgba(0,0,0,0.03); }
+  table.pnl tr.net td{ font-weight:600; color:var(--amber-soft); border-top:1px solid rgba(232,166,89,0.3); }
+  .section-dawn table.pnl tr.net td{ color:var(--moss-deep); }
+
+  /* market stat */
+  .stat-block{ display:flex; flex-direction:column; gap:0.4rem; }
+  .stat-big{ font-family:'Fraunces', serif; font-size:clamp(2.6rem,8vw,5.4rem); font-style:italic; line-height:1; }
+  .stat-label{ font-size:0.9rem; opacity:0.65; font-weight:300; max-width:30ch; }
+  .stat-row{ display:flex; justify-content:space-between; gap:2rem; flex-wrap:wrap; margin-top:2.5rem; }
+
+  /* key metrics */
+  .metric-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; margin-top:2.5rem; }
+  @media (max-width:820px){ .metric-row{ grid-template-columns:1fr; } }
+  .metric{ text-align:left; }
+  .metric .num{ font-family:'Fraunces', serif; font-size:clamp(2rem,5vw,3.4rem); font-style:italic; color:var(--amber-soft); }
+  .metric .lab{ font-size:0.85rem; opacity:0.7; margin-top:0.3rem; }
+
+  /* canva embed */
+  .canva-frame-wrap{
+    position:relative; width:100%; padding-top:56.25%; border-radius:16px; overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,0.45); margin-top:2.4rem;
+    border:1px solid rgba(232,166,89,0.2);
+  }
+  .canva-frame-wrap iframe{ position:absolute; inset:0; width:100%; height:100%; border:none; }
+  .canva-link{
+    display:inline-flex; align-items:center; gap:0.5rem; margin-top:1.4rem;
+    font-family:'JetBrains Mono',monospace; font-size:0.78rem; letter-spacing:0.04em;
+    color:var(--amber-soft); text-decoration:none; border-bottom:1px solid rgba(232,166,89,0.4); padding-bottom:2px;
+  }
+
+  /* footer */
+  footer{
+    background:#0a1310; padding:5rem 8vw 3rem; text-align:center;
+  }
+  footer h2{ font-size:clamp(2.2rem,6vw,3.6rem); margin-bottom:0.6rem; }
+  footer p{ opacity:0.55; font-size:0.85rem; font-weight:300; }
+  .appendix{ margin-top:3.5rem; text-align:left; max-width:640px; margin-left:auto; margin-right:auto; }
+  .appendix .eyebrow{ justify-content:flex-start; }
+  .appendix a{ display:block; font-size:0.78rem; opacity:0.55; text-decoration:none; padding:0.3rem 0; font-family:'JetBrains Mono', monospace; word-break:break-all; }
+  .appendix a:hover{ opacity:0.9; color:var(--amber-soft); }
+
+  .fade-in{ opacity:0; transform:translateY(18px); transition:opacity 0.8s ease, transform 0.8s ease; }
+  .fade-in.visible{ opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<div id="fireflyLayer"></div>
+<div class="bloom-layer" id="bloomLayer"></div>
+
+<!-- ===================== HERO ===================== -->
+<section class="section-night hero" id="hero">
+  <div class="hero-ridge">
+    <svg class="ridge-svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+      <path d="M0,220 L120,180 L260,230 L420,150 L600,210 L760,140 L940,200 L1120,160 L1300,215 L1440,175 L1440,320 L0,320 Z" fill="#152219" opacity="0.9"/>
+      <path d="M0,260 L180,230 L360,270 L540,210 L740,260 L940,215 L1140,255 L1320,220 L1440,250 L1440,320 L0,320 Z" fill="#0c1613"/>
+    </svg>
+    <div class="lamp-dot" style="left:63%; top:34%;"></div>
+  </div>
+  <div class="eyebrow">D151 · Business Values in Design</div>
+  <h1 class="hero-title">BOTTLECO<br><em>Lumenis</em></h1>
+  <p class="hero-sub">A hands-free, illuminated hydration bottle built for hikers who move through daylight and dusk alike — glass on the outside, glow on the inside.</p>
+  <div class="hero-meta">
+    <div><strong>Team</strong>Audrey Choi · Skylar Sledd · Sherry Yan</div>
+    <div><strong>Role</strong>Product &amp; Business Design</div>
+    <div><strong>Scroll</strong>to explore the trail ↓</div>
+  </div>
+</section>
+
+<!-- ===================== USER RESEARCH ===================== -->
+<section class="section-night" id="research">
+  <div class="kicker-row">
+    <div>
+      <div class="eyebrow">01 · Field Research</div>
+      <h2 class="section-title">What hikers told us</h2>
+    </div>
+    <p class="section-lede">We talked to backpackers on the trail — about weight, glass, plastic guilt, and one very specific request for a lamp.</p>
+  </div>
+  <div class="grid grid-2">
+    <div class="card bloomable">
+      <p class="quote">"Some people want plastic for durability. But there's a growing conscience about plastic use — what's becoming more popular are glass water bottles."</p>
+      <div class="who">Father Chrysostym</div>
+      <div class="bloom-hint">click to bloom</div>
+    </div>
+    <div class="card bloomable">
+      <p class="quote">"The best water bottle for me is a Nalgene. The only way to improve a Nalgene is to add a lamp."</p>
+      <div class="who">Father Chrysostym</div>
+      <div class="bloom-hint">click to bloom</div>
+    </div>
+    <div class="card bloomable">
+      <p class="quote">"The best bottle wouldn't throw off the entire weight of your backpack — and it should be more accessible."</p>
+      <div class="who">Briana</div>
+      <div class="bloom-hint">click to bloom</div>
+    </div>
+    <div class="card bloomable">
+      <p class="quote">"I'd want it to be easily accessible straight from my backpack."</p>
+      <div class="who">David</div>
+      <div class="bloom-hint">click to bloom</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PERSONA ===================== -->
+<section class="section-dawn" id="persona">
+  <div class="eyebrow">02 · User Persona</div>
+  <div class="persona-wrap">
+    <div>
+      <span class="persona-tag">The Optimized Backpacker</span>
+      <h2 class="section-title" style="margin-bottom:0.6rem;">Meet Chris</h2>
+      <p class="section-lede" style="opacity:1; color:var(--ink-dawn-dim);">Backpacks three times a year, three days to a week at a stretch. Gear-forward, sustainability-minded, allergic to inefficiency.</p>
+      <p class="persona-quote">"Every small inefficiency adds up during a hike."</p>
+    </div>
+    <div class="grid grid-2">
+      <div>
+        <div class="eyebrow" style="margin-bottom:0.6rem;">Needs</div>
+        <ul class="list-plain">
+          <li>Gear for day and night, multi-day hiking</li>
+          <li>Easy hydration on longer trips</li>
+          <li>Visibility once the sun drops</li>
+          <li>A bottle he can actually keep clean</li>
+        </ul>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:0.6rem;">Behaviors</div>
+        <ul class="list-plain">
+          <li>3 trips a year, 3–7 days each</li>
+          <li>Values sustainability and durability</li>
+          <li>Expects one bottle to last six years</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PAIN POINTS ===================== -->
+<section class="section-night" id="pain">
+  <div class="eyebrow">03 · Pain Points</div>
+  <h2 class="section-title" style="margin-bottom:3rem;">Three tensions on the trail</h2>
+  <div class="grid grid-3">
+    <div class="card">
+      <span class="pain-num">01</span>
+      <b>Accessibility while moving</b>
+      <p style="font-weight:300; opacity:0.8; margin-top:0.6rem; font-size:0.92rem;">Hikers want hydration woven into the walk itself — no extra load, physical or mental.</p>
+    </div>
+    <div class="card">
+      <span class="pain-num">02</span>
+      <b>Durability vs. sustainability</b>
+      <p style="font-weight:300; opacity:0.8; margin-top:0.6rem; font-size:0.92rem;">A growing pull toward materials that last for years and don't cost the planet anything.</p>
+    </div>
+    <div class="card">
+      <span class="pain-num">03</span>
+      <b>Room for one more feature</b>
+      <p style="font-weight:300; opacity:0.8; margin-top:0.6rem; font-size:0.92rem;">Genuine openness to something new — especially a built-in light for visibility after dark.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRODUCT ===================== -->
+<section class="section-dawn" id="product">
+  <div class="eyebrow">04 · The Product</div>
+  <h2 class="section-title">Introducing Bottleco Lumenis</h2>
+  <p class="section-lede" style="opacity:1; color:var(--ink-dawn-dim); margin-top:0.8rem;">A hands-free, illuminated hiking water bottle designed for easy access, visibility, and all-day durability on the trail.</p>
+
+  <div class="bottle-diagram">
+    <svg width="220" height="360" viewBox="0 0 220 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M120 20 Q135 20 135 35 L135 55 Q160 65 160 90 L160 300 Q160 330 130 330 L90 330 Q60 330 60 300 L60 90 Q60 65 85 55 L85 35 Q85 20 100 20 Z"
+            fill="rgba(70,97,76,0.06)" stroke="#46614c" stroke-width="2"/>
+      <rect x="70" y="140" width="80" height="150" rx="14" fill="none" stroke="#46614c" stroke-width="1.4" opacity="0.5"/>
+      <circle cx="110" cy="300" r="14" fill="#e8a659" opacity="0.9">
+        <animate attributeName="opacity" values="0.5;1;0.5" dur="2.6s" repeatCount="indefinite"/>
+      </circle>
+      <path d="M118 25 C150 15, 175 35, 175 60" stroke="#46614c" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <circle cx="177" cy="63" r="7" fill="#46614c"/>
+    </svg>
+  </div>
+
+  <div class="feat-list">
+    <div class="feat">
+      <b>Premium glass, 20–32 oz</b>
+      <span>Wrapped in a protective silicone sleeve for grip and drop protection.</span>
+    </div>
+    <div class="feat">
+      <b>Built-in insulated tube</b>
+      <span>A bite valve lets you sip without ever pulling the bottle from your pack.</span>
+    </div>
+    <div class="feat">
+      <b>Dial-controlled LED light</b>
+      <span>Glows through the water itself, like carrying a lantern instead of a bottle.</span>
+    </div>
+    <div class="feat">
+      <b>Ergonomic, contoured grip</b>
+      <span>Shaped for a secure hold on uneven terrain, day or night.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STRATEGY ===================== -->
+<section class="section-night" id="strategy">
+  <div class="eyebrow">05 · Design Strategy</div>
+  <h2 class="section-title" style="margin-bottom:2.6rem;">Who we're designing for</h2>
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="who" style="margin-top:0;">Who</div>
+      <p style="margin-top:0.6rem; font-weight:300;">Hikers, backpackers, campers — the outdoor-performance segment.</p>
+    </div>
+    <div class="card">
+      <div class="who" style="margin-top:0;">Needs</div>
+      <p style="margin-top:0.6rem; font-weight:300;">Reliability, weight, modularity, durability.</p>
+    </div>
+    <div class="card">
+      <div class="who" style="margin-top:0;">Key driver</div>
+      <p style="margin-top:0.6rem; font-weight:300;">Function over aesthetics — but never at the cost of either.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MARKET ===================== -->
+<section class="section-dawn" id="market">
+  <div class="eyebrow">06 · Market Analysis</div>
+  <h2 class="section-title">Where we sit in the field</h2>
+  <table class="market">
+    <thead>
+      <tr><th>Product</th><th>Category</th><th>Price</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>CamelBak Hydration Pack</td><td>Hands-free hydration</td><td class="price">$80–100</td></tr>
+      <tr><td>Platypus Hoser</td><td>Reservoir + tube</td><td class="price">$30–50</td></tr>
+      <tr><td>Nalgene Widemouth</td><td>Durable plastic bottle</td><td class="price">$10–20</td></tr>
+      <tr><td>Stanley</td><td>Insulated tumbler</td><td class="price">$40–60</td></tr>
+      <tr><td>Owala FreeSip</td><td>Everyday bottle</td><td class="price">$20–40</td></tr>
+      <tr><td>Hydro Flask</td><td>Insulated steel</td><td class="price">$30–50</td></tr>
+      <tr><td>LifeStraw</td><td>Filtered bottle</td><td class="price">$40–60</td></tr>
+      <tr class="highlight"><td><b>Bottleco Lumenis</b></td><td>Illuminated glass + hands-free tube</td><td class="price"><b>$60</b></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ===================== COGS ===================== -->
+<section class="section-night" id="cogs">
+  <div class="eyebrow">07 · Cost of Goods Sold</div>
+  <h2 class="section-title" style="margin-bottom:2.2rem;">What it costs to build one</h2>
+  <div class="cogs-wrap">
+    <div>
+      <div class="cogs-bar">
+        <div class="cogs-seg" style="width:48%; background:var(--amber);"></div>
+        <div class="cogs-seg" style="width:32%; background:var(--moss);"></div>
+        <div class="cogs-seg" style="width:18%; background:var(--bloom);"></div>
+        <div class="cogs-seg" style="width:2%; background:#8899a6;"></div>
+      </div>
+      <div class="cogs-legend">
+        <div class="row"><span class="swatch" style="background:var(--amber);"></span> Borosilicate glass body — $1.67</div>
+        <div class="row"><span class="swatch" style="background:var(--moss);"></span> Plastic components — $1.09</div>
+        <div class="row"><span class="swatch" style="background:var(--bloom);"></span> Silicone tube &amp; seals — $0.61</div>
+        <div class="row"><span class="swatch" style="background:#8899a6;"></span> Metal contacts &amp; fasteners — $0.09</div>
+      </div>
+    </div>
+    <div>
+      <p style="font-weight:300; opacity:0.75; max-width:36ch;">Glass, plastic housing for the light and battery, silicone for the tube and seals, and a handful of metal contacts — the whole build lands at:</p>
+      <div class="cogs-total">$3.46 <span style="font-size:1.1rem; opacity:0.6; font-style:normal;">per unit</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== REVENUE TREE ===================== -->
+<section class="section-dawn" id="revenue">
+  <div class="eyebrow">08 · Year 1 Revenue Model</div>
+  <h2 class="section-title">From market size to first-year revenue</h2>
+  <div class="tree">
+    <div class="tree-node"><div class="k">Adults, US</div><div class="v">276.8M</div></div>
+    <div class="arrow">→</div>
+    <div class="tree-node"><div class="k">Go backpacking</div><div class="v">3.7%</div><div class="sub">≈ 10.2M addressable</div></div>
+    <div class="arrow">→</div>
+    <div class="tree-node"><div class="k">Year 1 share</div><div class="v">0.05%</div></div>
+    <div class="arrow">→</div>
+    <div class="tree-node"><div class="k">Per bottle margin</div><div class="v">$30</div></div>
+    <div class="arrow">→</div>
+    <div class="tree-node"><div class="k">Year 1 revenue</div><div class="v">$153,624</div></div>
+  </div>
+</section>
+
+<!-- ===================== P&L ===================== -->
+<section class="section-night" id="pnl">
+  <div class="eyebrow">09 · Five-Year Outlook</div>
+  <h2 class="section-title" style="margin-bottom:1rem;">Profit &amp; loss, year by year</h2>
+  <div style="overflow-x:auto;">
+  <table class="pnl">
+    <thead>
+      <tr><th>Line item</th><th>Year 1</th><th>Year 2</th><th>Year 3</th><th>Year 4</th><th>Year 5</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Units sold</td><td>5,121</td><td>12,688</td><td>27,269</td><td>44,982</td><td>69,520</td></tr>
+      <tr><td>Revenue</td><td>$153,624</td><td>$380,631</td><td>$818,082</td><td>$1,349,474</td><td>$2,085,606</td></tr>
+      <tr><td>COGS</td><td>$21,217</td><td>$47,399</td><td>$104,852</td><td>$173,139</td><td>$261,539</td></tr>
+      <tr><td>Gross profit</td><td>$132,406</td><td>$333,231</td><td>$713,230</td><td>$1,176,335</td><td>$1,824,066</td></tr>
+      <tr><td>Operating expenses</td><td>$59,913</td><td>$87,545</td><td>$98,170</td><td>$107,960</td><td>$166,849</td></tr>
+      <tr><td>Operating income</td><td>$72,493</td><td>$245,687</td><td>$615,060</td><td>$1,068,377</td><td>$1,657,218</td></tr>
+      <tr><td>Tax</td><td>$13,049</td><td>$44,224</td><td>$10,711</td><td>$192,308</td><td>$298,299</td></tr>
+      <tr class="net"><td>Net profit</td><td>$59,443</td><td>$201,463</td><td>$504,349</td><td>$876,069</td><td>$1,358,918</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- ===================== MARKET STAT ===================== -->
+<section class="section-dawn" id="marketstat">
+  <div class="eyebrow">10 · Market Tailwind</div>
+  <div class="stat-row">
+    <div class="stat-block">
+      <div class="stat-big">$11.02B</div>
+      <div class="stat-label">Global reusable water bottle market, 2025</div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-big" style="color:var(--moss-deep);">$17.36B</div>
+      <div class="stat-label">Projected market size by 2034</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== KEY METRICS ===================== -->
+<section class="section-night" id="metrics">
+  <div class="eyebrow">11 · The Numbers That Matter</div>
+  <h2 class="section-title">Getting to profitability</h2>
+  <div class="metric-row">
+    <div class="metric"><div class="num">$100K</div><div class="lab">Launch capital required</div></div>
+    <div class="metric"><div class="num">14 mo</div><div class="lab">Time to break even</div></div>
+    <div class="metric"><div class="num">$3M</div><div class="lab">Projected profit by end of Year 5</div></div>
+  </div>
+</section>
+
+<!-- ===================== CANVA EMBED ===================== -->
+<section class="section-dawn" id="deck">
+  <div class="eyebrow">12 · Full Presentation</div>
+  <h2 class="section-title">Watch the full deck</h2>
+  <p class="section-lede" style="opacity:1; color:var(--ink-dawn-dim); margin-top:0.6rem;">The complete slide-by-slide walkthrough, embedded below.</p>
+  <div class="canva-frame-wrap">
+    <iframe loading="lazy" src="https://www.canva.com/design/DAHHIxk0_oo/gZvc9ZTQf-_eOTeA0CrAzg/view?embed" allowfullscreen allow="fullscreen"></iframe>
+  </div>
+  <a class="canva-link" href="https://www.canva.com/design/DAHHIxk0_oo/gZvc9ZTQf-_eOTeA0CrAzg/view" target="_blank" rel="noopener">View full deck on Canva ↗</a>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="section-night">
+  <h2 class="display">Thank you.</h2>
+  <p>Bottleco Lumenis — Audrey Choi, Skylar Sledd, Sherry Yan · D151 Business Values in Design</p>
+  <div class="appendix">
+    <div class="eyebrow">Appendix &amp; Sources</div>
+    <a href="https://www.census.gov/topics/population.html" target="_blank" rel="noopener">census.gov — Population data</a>
+    <a href="https://www.forbes.com/sites/rogersands/2023/03/03/backpacking-continues-its-surge-in-popularity/" target="_blank" rel="noopener">forbes.com — % of adults who backpack</a>
+    <a href="https://www.delish.com/kitchen-tools/kitchen-secrets/a65665778/replace-reusable-water-bottle-signs/" target="_blank" rel="noopener">delish.com — Average bottle replacement cycle</a>
+    <a href="https://www.cleverhiker.com/more-gear/best-glass-water-bottles/" target="_blank" rel="noopener">cleverhiker.com — Best glass water bottles</a>
+    <a href="https://www.cleverhiker.com/more-gear/glaceau-smartwater-bottle-review/" target="_blank" rel="noopener">cleverhiker.com — Glacéau Smartwater review</a>
+    <a href="https://www.thebrokebackpacker.com/backpacker-statistics/" target="_blank" rel="noopener">thebrokebackpacker.com — Backpacker statistics</a>
+    <a href="https://www.fortunebusinessinsights.com/reusable-water-bottle-market-102574" target="_blank" rel="noopener">fortunebusinessinsights.com — Reusable water bottle market</a>
+  </div>
+</footer>
+
+<script>
+  // ---------- firefly cursor trail ----------
+  const fireflyLayer = document.getElementById('fireflyLayer');
+  let lastTime = 0;
+  window.addEventListener('mousemove', (e) => {
+    const now = Date.now();
+    if (now - lastTime < 45) return;
+    lastTime = now;
+    const dot = document.createElement('div');
+    dot.className = 'firefly';
+    dot.style.left = e.clientX + 'px';
+    dot.style.top = e.clientY + 'px';
+    // detect if current section is dawn
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const section = el ? el.closest('section') : null;
+    if (section && section.classList.contains('section-dawn')) {
+      dot.classList.add('dawnfly');
+    }
+    fireflyLayer.appendChild(dot);
+    setTimeout(() => dot.remove(), 1200);
+  });
+  // lightweight touch support
+  window.addEventListener('touchmove', (e) => {
+    const t = e.touches[0];
+    if (!t) return;
+    const dot = document.createElement('div');
+    dot.className = 'firefly';
+    dot.style.left = t.clientX + 'px';
+    dot.style.top = t.clientY + 'px';
+    fireflyLayer.appendChild(dot);
+    setTimeout(() => dot.remove(), 1200);
+  }, {passive:true});
+
+  // apply dawnfly styling dynamically since class added after creation
+  const styleTag = document.createElement('style');
+  styleTag.textContent = `.firefly.dawnfly{ background:var(--moss) !important; box-shadow:0 0 8px 2px rgba(107,143,113,0.5), 0 0 16px 3px rgba(107,143,113,0.25) !important; }`;
+  document.head.appendChild(styleTag);
+
+  // ---------- click-to-bloom ----------
+  const bloomLayer = document.getElementById('bloomLayer');
+  function makeFlowerSVG(color1, color2){
+    return `
+    <svg width="46" height="46" viewBox="0 0 46 46" xmlns="http://www.w3.org/2000/svg">
+      <g>
+        <ellipse cx="23" cy="12" rx="7" ry="10" fill="${color1}"/>
+        <ellipse cx="23" cy="12" rx="7" ry="10" fill="${color1}" transform="rotate(72 23 23)"/>
+        <ellipse cx="23" cy="12" rx="7" ry="10" fill="${color1}" transform="rotate(144 23 23)"/>
+        <ellipse cx="23" cy="12" rx="7" ry="10" fill="${color1}" transform="rotate(216 23 23)"/>
+        <ellipse cx="23" cy="12" rx="7" ry="10" fill="${color1}" transform="rotate(288 23 23)"/>
+        <circle cx="23" cy="23" r="6" fill="${color2}"/>
+      </g>
+    </svg>`;
+  }
+  document.querySelectorAll('.bloomable, .card, .feat').forEach(el => {
+    el.addEventListener('click', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX;
+      const y = e.clientY;
+      for (let i=0; i<3; i++){
+        const flower = document.createElement('div');
+        flower.className = 'bloom';
+        const offsetX = (Math.random()-0.5) * 70;
+        const offsetY = (Math.random()-0.5) * 40;
+        flower.style.left = (x + offsetX) + 'px';
+        flower.style.top = (y + offsetY) + 'px';
+        flower.style.animationDelay = (i * 0.12) + 's';
+        const colors = [['#e8b4c8','#e8a659'], ['#f2c893','#6b8f71'], ['#cfe0d2','#e8a659']];
+        const c = colors[i % colors.length];
+        flower.innerHTML = makeFlowerSVG(c[0], c[1]);
+        bloomLayer.appendChild(flower);
+        setTimeout(() => flower.remove(), 1700);
+      }
+    });
+  });
+
+  // ---------- scroll reveal ----------
+  document.querySelectorAll('section > *').forEach(el => el.classList.add('fade-in'));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-in').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
