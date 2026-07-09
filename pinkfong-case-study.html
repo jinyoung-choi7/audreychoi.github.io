@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Revolutionizing Storytelling with AI-Driven Immersion — Audrey Choi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cloud:#FFFBFD;
+    --bubblegum:#FF2E93;
+    --bubblegum-deep:#E0157A;
+    --cotton:#FFE7F3;
+    --lavender:#B7A6FF;
+    --lavender-soft:#EFEBFF;
+    --plum:#2B0E28;
+    --plum-soft:#6E5568;
+    --star:#FFD93D;
+    --line:rgba(43,14,40,0.09);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--cloud);
+    color:var(--plum);
+    font-family:'Plus Jakarta Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .display{
+    font-family:'Baloo 2', sans-serif;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+
+  /* ---------- nav ---------- */
+  .nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,251,253,0.82);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1180px; margin:0 auto; padding:16px 32px;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .nav-brand{
+    font-family:'Baloo 2', sans-serif; font-weight:700; font-size:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .nav-brand .dot{width:10px;height:10px;border-radius:50%;background:var(--bubblegum);display:inline-block;}
+  .nav-links{display:flex; gap:28px; font-size:14px; font-weight:600;}
+  .nav-links a{text-decoration:none; color:var(--plum-soft); transition:color .2s;}
+  .nav-links a:hover{color:var(--bubblegum);}
+
+  /* ---------- hero ---------- */
+  .hero{
+    position:relative;
+    padding:96px 0 64px;
+    background:
+      radial-gradient(circle at 12% 18%, var(--cotton) 0%, transparent 45%),
+      radial-gradient(circle at 88% 8%, var(--lavender-soft) 0%, transparent 40%),
+      var(--cloud);
+    overflow:hidden;
+  }
+  .hero-inner{
+    display:grid; grid-template-columns:1.15fr 1fr; gap:48px; align-items:center;
+    position:relative; z-index:2;
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    background:var(--cotton); color:var(--bubblegum-deep);
+    font-weight:700; font-size:13px; padding:7px 14px; border-radius:999px;
+    margin-bottom:20px;
+  }
+  .eyebrow svg{width:14px;height:14px;}
+  .hero h1{
+    font-size:clamp(38px, 5vw, 62px);
+    font-weight:800;
+    line-height:1.04;
+    color:var(--plum);
+  }
+  .hero h1 span{color:var(--bubblegum);}
+  .hero p.sub{
+    margin-top:20px; font-size:18px; line-height:1.6; color:var(--plum-soft);
+    max-width:480px;
+  }
+  .hero-meta{
+    margin-top:32px; display:flex; align-items:center; gap:12px;
+    font-size:14px; font-weight:600; color:var(--plum-soft);
+  }
+  .hero-meta .avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg, var(--bubblegum), var(--lavender));
+  }
+
+  /* world selector — signature interactive element #1 */
+  .world-stage{
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:28px; padding:24px 0;
+  }
+  .speech-bubble{
+    position:relative;
+    background:#fff; border:2px solid var(--plum); border-radius:22px;
+    padding:18px 24px; max-width:300px; text-align:center;
+    font-size:15px; font-weight:600; line-height:1.45;
+    box-shadow:0 6px 0 var(--plum);
+  }
+  .speech-bubble:after{
+    content:''; position:absolute; bottom:-13px; left:50%; transform:translateX(-50%);
+    width:0;height:0; border-left:10px solid transparent; border-right:10px solid transparent;
+    border-top:12px solid var(--plum);
+  }
+  .speech-bubble:before{
+    content:''; position:absolute; bottom:-9px; left:50%; transform:translateX(-50%);
+    width:0;height:0; border-left:8px solid transparent; border-right:8px solid transparent;
+    border-top:10px solid #fff; z-index:1;
+  }
+  .speech-bubble b{color:var(--bubblegum-deep);}
+  .world-orb-row{display:flex; gap:22px; flex-wrap:wrap; justify-content:center;}
+  .world-orb{
+    position:relative; width:112px; height:112px; border-radius:50%;
+    background:#fff; border:3px solid var(--plum);
+    display:flex; align-items:center; justify-content:center;
+    font-size:40px; cursor:pointer; user-select:none;
+    box-shadow:0 5px 0 var(--plum);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+  .world-orb:hover{transform:translateY(-3px);}
+  .world-orb.active{
+    border-color:var(--bubblegum); box-shadow:0 5px 0 var(--bubblegum-deep);
+    background:var(--cotton);
+  }
+  .world-orb .num{
+    position:absolute; top:-8px; right:-8px; width:26px;height:26px;border-radius:50%;
+    background:var(--star); border:2px solid var(--plum); font-size:12px; font-weight:800;
+    display:flex; align-items:center; justify-content:center; font-family:'Baloo 2',sans-serif;
+  }
+  .world-hint{
+    margin:0; font-size:13.5px; font-weight:600; color:var(--plum-soft);
+  }
+
+  /* ---------- section shell ---------- */
+  section{padding:88px 0;}
+  .section-head{max-width:640px; margin:0 auto 52px; text-align:center;}
+  .section-head .kicker{
+    color:var(--bubblegum-deep); font-weight:700; font-size:13px;
+    text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px; display:block;
+  }
+  .section-head h2{font-size:clamp(28px,3.4vw,40px); font-weight:700;}
+  .section-head p{margin-top:14px; color:var(--plum-soft); font-size:16px; line-height:1.6;}
+
+  /* ---------- pain points ---------- */
+  .pain-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .pain-card{
+    background:#fff; border:2px solid var(--plum); border-radius:24px;
+    padding:28px; box-shadow:0 6px 0 var(--plum);
+    transition:transform .18s ease;
+  }
+  .pain-card:hover{transform:translateY(-4px);}
+  .pain-icon{
+    width:52px;height:52px;border-radius:16px; background:var(--cotton);
+    display:flex; align-items:center; justify-content:center; font-size:24px; margin-bottom:16px;
+  }
+  .pain-card h3{font-size:19px; margin-bottom:10px;}
+  .pain-card p{font-size:14.5px; line-height:1.6; color:var(--plum-soft); margin:0 0 8px;}
+  .pain-card .tag{
+    display:inline-block; font-size:12px; font-weight:700; color:var(--bubblegum-deep);
+    background:var(--cotton); padding:4px 10px; border-radius:999px; margin-top:6px;
+  }
+
+  /* ---------- solution / toggle (signature element #2) ---------- */
+  .solution-panel{
+    background:var(--plum); border-radius:32px; padding:56px; color:var(--cloud);
+    display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;
+  }
+  .solution-copy .kicker{color:var(--star);}
+  .solution-copy h2{color:#fff; font-size:clamp(26px,3vw,34px);}
+  .solution-copy p{margin-top:16px; color:rgba(255,255,255,0.72); line-height:1.65; font-size:15.5px;}
+  .toggle-row{
+    margin-top:28px; display:inline-flex; align-items:center; gap:14px;
+    background:rgba(255,255,255,0.08); padding:6px; border-radius:999px;
+  }
+  .toggle-row button{
+    border:none; background:transparent; color:rgba(255,255,255,0.55);
+    font-family:'Plus Jakarta Sans'; font-weight:700; font-size:13.5px;
+    padding:10px 18px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .toggle-row button.on{background:var(--bubblegum); color:#fff;}
+  .demo-frame{
+    background:#fff; border-radius:22px; padding:22px; min-height:260px;
+    display:flex; flex-direction:column; justify-content:center; position:relative;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+  }
+  .demo-view{display:none;}
+  .demo-view.show{display:block; animation:fade .35s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
+  .book-page{
+    color:var(--plum); font-size:14px; line-height:1.8; font-style:italic;
+    border-left:3px solid var(--cotton); padding-left:16px;
+  }
+  .book-page .lbl{
+    display:block; font-style:normal; font-weight:700; color:var(--plum-soft);
+    font-size:11px; text-transform:uppercase; letter-spacing:.08em; margin-bottom:10px;
+  }
+  .chat-line{display:flex; margin-bottom:10px;}
+  .chat-line.me{justify-content:flex-end;}
+  .bubble{
+    max-width:78%; padding:10px 14px; border-radius:16px; font-size:13.5px; font-weight:500; line-height:1.4;
+  }
+  .chat-line.them .bubble{background:var(--lavender-soft); color:var(--plum); border-bottom-left-radius:4px;}
+  .chat-line.me .bubble{background:var(--bubblegum); color:#fff; border-bottom-right-radius:4px;}
+  .chat-ask{
+    margin-top:6px; display:flex; gap:8px;
+  }
+  .chat-ask span{
+    flex:1; background:var(--cotton); border-radius:999px; padding:9px 14px; font-size:13px; color:var(--plum-soft);
+  }
+  .chat-ask button{
+    background:var(--star); border:none; border-radius:999px; padding:9px 16px; font-weight:800; font-size:12.5px;
+    font-family:'Baloo 2'; cursor:default;
+  }
+
+  /* ---------- case study ---------- */
+  .case-wrap{display:grid; grid-template-columns:0.85fr 1.15fr; gap:56px; align-items:center;}
+  .case-visual{
+    background:linear-gradient(160deg, var(--lavender-soft), var(--cotton));
+    border-radius:28px; padding:32px; border:2px solid var(--plum); box-shadow:0 6px 0 var(--plum);
+  }
+  .case-visual .phone-title{font-weight:700; font-size:13px; color:var(--bubblegum-deep); margin-bottom:14px;}
+  .feature-list{list-style:none; margin:0; padding:0;}
+  .feature-list li{
+    display:grid; grid-template-columns:auto 1fr; gap:16px; padding:18px 0;
+    border-top:1px solid var(--line);
+  }
+  .feature-list li:first-child{border-top:none;}
+  .feature-list .fnum{
+    font-family:'Baloo 2'; font-weight:700; color:var(--bubblegum); font-size:15px;
+    width:34px; height:34px; border-radius:50%; background:var(--cotton);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .feature-list h4{font-size:16.5px; margin-bottom:4px;}
+  .feature-list p{margin:0; font-size:14px; color:var(--plum-soft); line-height:1.55;}
+
+  /* pipeline strip */
+  .pipeline{
+    margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:0;
+    border:2px solid var(--plum); border-radius:20px; overflow:hidden;
+  }
+  .pipeline > div{padding:22px 20px; background:#fff;}
+  .pipeline > div:nth-child(2){background:var(--cotton);}
+  .pipeline > div:nth-child(3){background:var(--lavender-soft);}
+  .pipeline h5{font-family:'Baloo 2'; font-size:14.5px; color:var(--bubblegum-deep); margin-bottom:6px;}
+  .pipeline p{margin:0; font-size:13px; color:var(--plum-soft); line-height:1.5;}
+
+  /* ---------- why pinkfong ---------- */
+  .why-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:24px;}
+  .why-card{text-align:center; padding:8px;}
+  .why-badge{
+    width:104px; height:104px; border-radius:50%; margin:0 auto 20px;
+    background:radial-gradient(circle at 30% 30%, #fff, var(--cotton));
+    border:3px solid var(--plum); display:flex; align-items:center; justify-content:center;
+    font-size:38px; box-shadow:0 5px 0 var(--plum);
+  }
+  .why-card h3{font-size:17px; margin-bottom:8px;}
+  .why-card p{font-size:14px; color:var(--plum-soft); line-height:1.6; margin:0;}
+
+  /* ---------- embed ---------- */
+  .embed-section{background:var(--plum-soft, #f7effa);}
+  .embed-shell{
+    border-radius:28px; overflow:hidden; border:2px solid var(--plum); box-shadow:0 8px 0 var(--plum);
+  }
+  .embed-credit{
+    text-align:center; margin-top:16px; font-size:13px; color:var(--plum-soft);
+  }
+  .embed-credit a{color:var(--bubblegum-deep); font-weight:700; text-decoration:none;}
+
+  /* ---------- footer / contact ---------- */
+  footer{
+    background:var(--plum); color:#fff; padding:64px 0 40px; margin-top:0;
+  }
+  .foot-grid{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px;}
+  footer h2{font-size:clamp(26px,3vw,36px); color:#fff;}
+  .foot-links{display:flex; gap:24px; flex-wrap:wrap;}
+  .foot-links a{
+    color:rgba(255,255,255,0.85); text-decoration:none; font-weight:600; font-size:14.5px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .foot-links a:hover{color:var(--star);}
+  .foot-bottom{
+    margin-top:40px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.14);
+    font-size:12.5px; color:rgba(255,255,255,0.5); display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+  }
+
+  @media (max-width: 880px){
+    .hero-inner{grid-template-columns:1fr;}
+    .pain-grid{grid-template-columns:1fr;}
+    .solution-panel{grid-template-columns:1fr; padding:32px;}
+    .case-wrap{grid-template-columns:1fr;}
+    .pipeline{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-brand"><span class="dot"></span>Audrey Choi</div>
+    <div class="nav-links">
+      <a href="#pain">Problem</a>
+      <a href="#solution">Solution</a>
+      <a href="#case">Case Study</a>
+      <a href="#deck">Full Deck</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="eyebrow">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L14.5 9H22L16 13.5L18 21L12 16.5L6 21L8 13.5L2 9H9.5L12 2Z" fill="currentColor"/></svg>
+        Design Case Study
+      </span>
+      <h1>Revolutionizing storytelling with <span>AI‑driven immersion</span></h1>
+      <p class="sub">Bringing kids into the story worlds they love — an interactive, educational storytelling concept designed for Pinkfong.</p>
+      <div class="hero-meta">
+        <span class="avatar"></span>
+        By Audrey Choi · Stanford Design Major
+      </div>
+    </div>
+
+    <div class="world-stage">
+      <div class="speech-bubble" id="world-bubble">
+        Let's go meet our <b>friends!</b> Which world shall we visit together?
+      </div>
+
+      <div class="world-orb-row">
+        <div class="world-orb active" id="orb-1" data-world="1">🦭<span class="num">1</span></div>
+        <div class="world-orb" id="orb-2" data-world="2">🦈<span class="num">2</span></div>
+        <div class="world-orb" id="orb-3" data-world="3">🦕<span class="num">3</span></div>
+      </div>
+
+      <p class="world-hint">Tap a world to see who's waiting inside</p>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAIN POINTS ================= -->
+<section id="pain">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">The Problem</span>
+      <h2>Three groups, one shared gap</h2>
+      <p>Traditional storytelling apps ask kids to watch. Nobody's asking them to think, choose, or wonder — and that gap shows up differently for kids, parents, and the company trying to reach them.</p>
+    </div>
+    <div class="pain-grid">
+      <div class="pain-card">
+        <div class="pain-icon">📖</div>
+        <h3>Kids</h3>
+        <p>Books and videos are passive. Kids absorb a story instead of shaping one — the opposite of how they actually learn.</p>
+        <span class="tag">Bandura's Social Learning Theory</span>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">👀</div>
+        <h3>Parents</h3>
+        <p>Minecraft and Roblox win attention with immersive play, but parents hesitate — screen time without learning is a hard sell.</p>
+        <span class="tag">Our differentiator: learning first</span>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📊</div>
+        <h3>Companies</h3>
+        <p>Educational storytelling for young audiences is a crowded, fast-moving market — staying ahead means offering something genuinely interactive.</p>
+        <span class="tag">Market gap</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SOLUTION ================= -->
+<section id="solution">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker" style="color:var(--bubblegum-deep);">The Solution</span>
+      <h2>Empowering active learning through interactive storytelling</h2>
+    </div>
+    <div class="solution-panel">
+      <div class="solution-copy">
+        <span class="kicker">Try it</span>
+        <h2>From reading at a story to living inside one</h2>
+        <p>Kids don't just hear the story — they ask questions, make choices, and shape how it unfolds. AI-powered characters respond in real time, turning every page into a conversation.</p>
+        <div class="toggle-row">
+          <button class="on" id="btn-passive" onclick="setMode('passive')">Passive reading</button>
+          <button id="btn-active" onclick="setMode('active')">Interactive storytelling</button>
+        </div>
+      </div>
+      <div class="demo-frame">
+        <div class="demo-view show" id="view-passive">
+          <div class="book-page">
+            <span class="lbl">Page 14</span>
+            "The little clownfish swam past the coral, wondering why the others were laughing at his friend. He didn't understand — so he kept swimming, and the story moved on without him."
+          </div>
+        </div>
+        <div class="demo-view" id="view-active">
+          <div class="chat-line them"><div class="bubble">A red-nosed fish is swimming by — the others are giggling. 🐠</div></div>
+          <div class="chat-line me"><div class="bubble">Why are they making fun of him?</div></div>
+          <div class="chat-line them"><div class="bubble">Great question! Let's go find out together — sometimes looking different just means being memorable. Want to ask him?</div></div>
+          <div class="chat-ask"><span>Why are they making fun of him?</span><button>Ask</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CASE STUDY ================= -->
+<section id="case">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Case Study</span>
+      <h2>What Mystic Messenger gets right</h2>
+      <p>A wildly popular interactive story app where users chat with fictional characters in real time — reimagined here as a safe, age-appropriate learning experience.</p>
+    </div>
+    <div class="case-wrap">
+      <div class="case-visual">
+        <div class="phone-title">Why it works</div>
+        <ul class="feature-list">
+          <li>
+            <span class="fnum">1</span>
+            <div><h4>Interactive storylines</h4><p>Users chat directly with fictional characters instead of watching from a distance.</p></div>
+          </li>
+          <li>
+            <span class="fnum">2</span>
+            <div><h4>Real-time communication</h4><p>Characters respond as though they exist in real life, deepening immersion.</p></div>
+          </li>
+          <li>
+            <span class="fnum">3</span>
+            <div><h4>Multi-ending structure</h4><p>Different choices lead to different outcomes, encouraging kids to replay and explore.</p></div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <h3 style="font-size:22px; margin-bottom:10px;">Storyboard for Pinkfong</h3>
+        <p style="color:var(--plum-soft); font-size:15px; line-height:1.6; margin-bottom:8px;">Three principles, adapted from Mystic Messenger, shape the Pinkfong prototype:</p>
+        <div class="pipeline">
+          <div>
+            <h5>Immersion with AI</h5>
+            <p>Real-time interactions let children engage directly with story characters.</p>
+          </div>
+          <div>
+            <h5>Educational focus</h5>
+            <p>Meaningful learning content is embedded in every character dialogue.</p>
+          </div>
+          <div>
+            <h5>Customizable paths</h5>
+            <p>Kids explore storylines tailored to their own interests and pace.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WHY PINKFONG ================= -->
+<section id="why" style="background:var(--cotton);">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Why Pinkfong</span>
+      <h2>A trusted world already built for this</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-badge">🏆</div>
+        <h3>Trusted leader</h3>
+        <p>A go-to name in high-quality, educational content built for young audiences.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-badge">🐟</div>
+        <h3>Storytelling expertise</h3>
+        <p>Iconic characters like Baby Shark already prove Pinkfong can make stories stick.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-badge">🌏</div>
+        <h3>Global reach & trust</h3>
+        <p>A family-friendly brand with the reach to launch safe, interactive learning at scale.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FULL DECK EMBED ================= -->
+<section id="deck">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="kicker">Full Presentation</span>
+      <h2>Read the complete deck</h2>
+      <p>Every slide from pain points to product vision — presented in full below.</p>
+    </div>
+    <div class="embed-shell">
+      <div style="position: relative; width: 100%; height: 0; padding-top: 56.2500%; overflow: hidden;">
+        <iframe loading="lazy" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: none; padding: 0; margin: 0;"
+          src="https://www.canva.com/design/DAGaBPVd53g/gk4PWo-nMge9jYX982oEsg/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+        </iframe>
+      </div>
+    </div>
+    <p class="embed-credit">
+      <a href="https://www.canva.com/design/DAGaBPVd53g/gk4PWo-nMge9jYX982oEsg/view?utm_content=DAGaBPVd53g&utm_campaign=designshare&utm_medium=embeds&utm_source=link" target="_blank" rel="noopener">Revolutionize Storytelling</a> by Audrey Jin-Young Choi
+    </p>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h2>Let's tell the<br>next story together.</h2>
+      </div>
+      <div class="foot-links">
+        <a href="tel:9179026926">📞 (917) 902‑6926</a>
+        <a href="mailto:achoi27@stanford.edu">✉️ achoi27@stanford.edu</a>
+        <a href="https://www.linkedin.com/in/audreyjinyoungchoi/" target="_blank" rel="noopener">🔗 LinkedIn</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>Audrey Choi · Stanford University Design Engineering</span>
+      <span>© 2026</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const worldData = {
+    1: "Let's go meet our <b>friends!</b> Which world shall we visit together?",
+    2: "The <b>Baby Shark</b> family is waiting — ready to sing and swim along?",
+    3: "Rawr! The <b>dino world</b> is calling — let's go dig up an adventure."
+  };
+  document.querySelectorAll('.world-orb').forEach(orb => {
+    orb.addEventListener('click', () => {
+      document.querySelectorAll('.world-orb').forEach(o => o.classList.remove('active'));
+      orb.classList.add('active');
+      const w = orb.getAttribute('data-world');
+      const bubble = document.getElementById('world-bubble');
+      bubble.style.opacity = 0;
+      setTimeout(() => {
+        bubble.innerHTML = worldData[w];
+        bubble.style.opacity = 1;
+      }, 120);
+    });
+  });
+
+  function setMode(mode){
+    const isActive = mode === 'active';
+    document.getElementById('btn-passive').classList.toggle('on', !isActive);
+    document.getElementById('btn-active').classList.toggle('on', isActive);
+    document.getElementById('view-passive').classList.toggle('show', !isActive);
+    document.getElementById('view-active').classList.toggle('show', isActive);
+  }
+</script>
+
+</body>
+</html>
