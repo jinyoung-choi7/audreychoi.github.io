@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audrey Choi · Résumé</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #e8e0d4;
+    --paper: #f3efe6;
+    --text: #2c2925;
+    --text-light: #7a746c;
+    --text-lighter: #a09890;
+    --divider: #cfc8be;
+    --serif: 'EB Garamond', Georgia, serif;
+    --serif2: 'Cormorant Garamond', Georgia, serif;
+  }
+  html { font-size: 16px; }
+  body {
+    background: var(--cream);
+    color: var(--text);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 22px 60px;
+    border-bottom: 1px solid var(--divider);
+    background: var(--cream);
+  }
+  .topbar a {
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-light); text-decoration: none;
+  }
+  .topbar a:hover { color: var(--text); }
+  .topbar .brand { font-family: var(--serif2); font-style: italic; font-size: 15px; color: var(--text); }
+
+  /* Page */
+  .sheet {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 70px 40px 120px;
+  }
+
+  .name-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 10px 24px;
+    margin-bottom: 6px;
+  }
+  .name {
+    font-family: var(--serif2); font-weight: 300; font-size: 46px;
+    letter-spacing: 0.01em; color: var(--text);
+  }
+  .name .ko { font-size: 16px; letter-spacing: 0.18em; color: var(--text-light); margin-left: 14px; }
+  .contact { font-size: 12.5px; color: var(--text-light); text-align: right; line-height: 1.7; white-space: nowrap; }
+  .contact a { color: var(--text-light); text-decoration: none; }
+
+  .role-line {
+    font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-lighter); margin-bottom: 34px;
+  }
+
+  .rule { height: 1px; background: var(--divider); margin: 6px 0 34px; }
+
+  section { margin-bottom: 38px; }
+  .section-head {
+    display: flex; align-items: baseline; gap: 14px;
+    margin-bottom: 18px;
+  }
+  .section-head .label {
+    font-family: var(--serif2); font-style: italic; font-weight: 300;
+    font-size: 21px; color: var(--text);
+    white-space: nowrap;
+  }
+  .section-head .line { flex: 1; height: 1px; background: var(--divider); }
+
+  .entry { margin-bottom: 20px; }
+  .entry:last-child { margin-bottom: 0; }
+  .entry-top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 16px; flex-wrap: wrap;
+    margin-bottom: 2px;
+  }
+  .entry-title { font-size: 16px; font-weight: 500; color: var(--text); }
+  .entry-sub { font-size: 14px; font-style: italic; color: var(--text-light); }
+  .entry-date {
+    font-size: 12px; letter-spacing: 0.04em; color: var(--text-lighter);
+    white-space: nowrap;
+  }
+  .entry-body { font-size: 13.5px; color: var(--text); line-height: 1.55; }
+  ul.bullets { list-style: none; margin-top: 6px; }
+  ul.bullets li {
+    font-size: 13.5px; line-height: 1.65; color: var(--text);
+    padding-left: 16px; position: relative; margin-bottom: 6px;
+  }
+  ul.bullets li::before {
+    content: "–"; position: absolute; left: 0; color: var(--text-lighter);
+  }
+
+  /* Skills grid */
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+  }
+  .skills-grid .cat-label {
+    font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--text-lighter); margin-bottom: 6px; display: block;
+  }
+  .skills-grid .cat-value {
+    font-size: 13.5px; color: var(--text); line-height: 1.6;
+  }
+
+  .footer-note {
+    margin-top: 50px; padding-top: 22px; border-top: 1px solid var(--divider);
+    font-family: var(--serif2); font-style: italic; font-size: 13px;
+    color: var(--text-lighter); text-align: center;
+  }
+
+  @media print {
+    .topbar { display: none; }
+    body { background: white; }
+    .sheet { padding: 20px 10px; max-width: 100%; }
+  }
+
+  @media (max-width: 640px) {
+    .topbar { padding: 18px 24px; }
+    .sheet { padding: 44px 22px 80px; }
+    .name { font-size: 34px; }
+    .contact { text-align: left; }
+    .name-row { flex-direction: column; align-items: flex-start; }
+    .skills-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="index.html">← Portfolio</a>
+  <span class="brand">Audrey 진영</span>
+  <a href="javascript:window.print()">Print / Save PDF</a>
+</div>
+
+<div class="sheet">
+
+  <div class="name-row">
+    <div class="name">Audrey Choi<span class="ko">진영</span></div>
+    <div class="contact">
+      <a href="mailto:achoi27@stanford.edu">achoi27@stanford.edu</a><br>
+      (917) 902-6926
+    </div>
+  </div>
+  <div class="role-line">Product Design Engineering · Stanford University</div>
+  <div class="rule"></div>
+
+  <!-- EDUCATION -->
+  <section>
+    <div class="section-head"><span class="label">Education</span><span class="line"></span></div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Stanford University</span>
+        <span class="entry-date">2023 – 2027</span>
+      </div>
+      <div class="entry-body">B.S. Product Design Engineering · Concentration in AI and Digital User Experience · GPA 3.8</div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">University of Oxford</span>
+        <span class="entry-date">Michaelmas 2025</span>
+      </div>
+      <div class="entry-body">Stanford Bing Overseas Study Program · Tutorial: Digital Technology and Economics, Oxford Internet Institute</div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Juilliard Pre-College</span>
+        <span class="entry-date">2018 – 2023</span>
+      </div>
+      <div class="entry-body">Bassoon &amp; Contrabassoon · GPA 3.9</div>
+    </div>
+  </section>
+
+  <!-- EXPERIENCE -->
+  <section>
+    <div class="section-head"><span class="label">Experience</span><span class="line"></span></div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Stanford Surgical Innovation Laboratory</span>
+        <span class="entry-date">2025 – Present</span>
+      </div>
+      <div class="entry-sub">Clinical Research Associate · Stanford, CA</div>
+      <ul class="bullets">
+        <li>Developed machine learning models of nerve-pressure zones for experimental robotic neurosurgery tools, processing data and documenting findings for the research team</li>
+        <li>Analyzed patient cerebrovascular blood flow data and coded algorithms to predict post-surgical complications and outcomes, presenting findings to guide model improvements</li>
+        <li>Conducted qualitative interviews with patients experiencing chronic nerve pain to validate an AI-based pain management model, improving predictive accuracy</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Sun Pharmaceutical Industries</span>
+        <span class="entry-date">Summer 2026</span>
+      </div>
+      <div class="entry-sub">Consumer Healthcare Intern · Hawthorne, NY</div>
+      <ul class="bullets">
+        <li>Benchmarked OTC competitors using AI-driven SEO analytics and Amazon Helium 10</li>
+        <li>Conducted demographic and market analyses across growth periods to identify shifts in consumer behavior and regulatory trends, informing digital marketing strategy</li>
+        <li>Developed an AI agent to synthesize consumer, policy, and market data, enabling localized health education content without third-party vendors</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Oracle Investment Management, L.P.</span>
+        <span class="entry-date">Summer 2025</span>
+      </div>
+      <div class="entry-sub">Equity Research Analyst · Greenwich, CT</div>
+      <ul class="bullets">
+        <li>Researched and developed long- and short-investment theses on publicly traded biotechnology and medical device companies</li>
+        <li>Assisted in sourcing, negotiating, and managing investments in privately held medical device companies; advised management teams on business development and market strategy</li>
+        <li>Analyzed treatment paradigms, clinical trial designs, regulatory strategy, patent estates, and financials as part of primary due diligence on portfolio investments</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-top">
+        <span class="entry-title">Boston Consulting Group, Inc.</span>
+        <span class="entry-date">Summer 2024</span>
+      </div>
+      <div class="entry-sub">Research Analyst · Seoul, Republic of Korea</div>
+      <ul class="bullets">
+        <li>Analyzed the organizational structure of competitor sales and trading platforms as part of a digital transformation strategy for a $2B South Korean asset management company</li>
+        <li>Performed competitive analysis of U.S.-based electronic trading platforms' marketing and retention strategies, guiding the client's decision on competitive features</li>
+        <li>Led primary market research on retail investor trading habits, summarizing insights that drove digital engagement recommendations</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section>
+    <div class="section-head"><span class="label">Skills &amp; Interests</span><span class="line"></span></div>
+    <div class="skills-grid">
+      <div>
+        <span class="cat-label">Technical</span>
+        <div class="cat-value">Figma, C++, HTML &amp; CSS, Python, Excel</div>
+      </div>
+      <div>
+        <span class="cat-label">Languages</span>
+        <div class="cat-value">Fluent in spoken &amp; written English and Korean</div>
+      </div>
+      <div>
+        <span class="cat-label">Beyond the Work</span>
+        <div class="cat-value">Nationally ranked saber fencer · classically trained bassoonist &amp; pianist</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer-note">Thank you for reading — I'd love to talk further.</div>
+
+</div>
+
+</body>
+</html>
