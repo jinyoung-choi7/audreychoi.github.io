@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoVital · Redesigning the Neonatal Resuscitation Display</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ece4d8;
+    --paper-raised:#f4eee3;
+    --rule:#d6cab8;
+    --rule-dark:#bfb29e;
+    --ink:#1c2040;
+    --ink-soft:#454a68;
+    --blue:#2b6396;
+    --blue-soft:#9dbfdc;
+    --blue-wash:rgba(43,99,150,0.09);
+    --brick:#8f3f37;
+    --brick-wash:rgba(143,63,55,0.08);
+    --display:'Cormorant Garamond', Georgia, serif;
+    --body:'EB Garamond', Georgia, serif;
+
+    /* semantic clinical colors, read by the monitor simulation script */
+    --red:#ef5350;
+    --amber:#f2b84b;
+    --green:#5fd97e;
+    --text-low:#5c6b7a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--body); font-size:18px; line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--blue-soft); color:var(--ink);}
+  a{color:var(--blue); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--blue); outline-offset:3px;}
+
+  /* quiet background marks */
+  .deco{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .deco .l1{position:absolute; left:6px; top:-20px; width:1px; height:420px; background:var(--rule-dark); transform:rotate(-2.5deg); opacity:.6;}
+  .deco .l2{position:absolute; right:14px; bottom:60px; width:1px; height:340px; background:var(--rule-dark); transform:rotate(2deg); opacity:.6;}
+  .deco .l3{position:absolute; right:14px; bottom:60px; width:150px; height:1px; background:var(--rule-dark); transform:rotate(-14deg); transform-origin:right center; opacity:.6;}
+  .deco .dot{position:absolute; right:26px; bottom:34px; width:34px; height:34px; border-radius:50%; background:var(--blue-soft); opacity:.55;}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{position:relative; z-index:1; display:grid; grid-template-columns:minmax(300px,33%) 1fr; min-height:100vh;}
+
+  aside.sidebar{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    border-right:1px solid var(--rule-dark);
+    padding:14px 44px 56px 12px;
+  }
+  .back{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--display); font-size:1.2rem; font-weight:500; color:var(--ink);
+    border:1px solid var(--rule-dark); border-radius:999px; padding:9px 28px 9px 28px;
+    background:rgba(244,238,227,0.55); text-decoration:none;
+  }
+  .back:hover{text-decoration:none; border-color:var(--blue); color:var(--blue);}
+  .sidebar-body{padding:30px 0 0 32px;}
+  h1.title{
+    font-family:var(--display); font-weight:500; letter-spacing:-0.01em;
+    font-size:clamp(3.2rem,5.4vw,5rem); line-height:1; margin:0 0 20px;
+  }
+  .tagline{font-family:var(--display); font-style:italic; font-size:1.7rem; line-height:1.25; color:var(--blue); margin:0;}
+  .side-block{margin-top:clamp(44px,8vh,96px);}
+  .side-block h3{font-family:var(--display); font-weight:600; font-size:1.5rem; margin:0 0 10px; line-height:1.2;}
+  .side-block p{margin:0; font-size:1.12rem; line-height:1.6; color:var(--ink-soft); max-width:26rem;}
+  .skills{list-style:none; margin:0; padding:0;}
+  .skills li{position:relative; padding-left:26px; font-size:1.12rem; line-height:1.45; margin-bottom:9px; color:var(--ink-soft);}
+  .skills li::before{content:''; position:absolute; left:3px; top:0.62em; width:6px; height:6px; border-radius:50%; background:var(--blue);}
+
+  main{padding:84px clamp(32px,6vw,104px) 40px clamp(32px,6vw,96px); min-width:0;}
+  main section{margin-bottom:128px;}
+  h2{
+    font-family:var(--display); font-weight:500; letter-spacing:-0.005em;
+    font-size:clamp(2.4rem,3.6vw,3.3rem); line-height:1.1; margin:0 0 44px;
+  }
+  h2::after{content:''; display:block; width:90px; height:2px; background:var(--blue); margin-top:20px;}
+  main p{font-size:1.28rem; line-height:1.8; color:var(--ink-soft); max-width:46rem; margin:0 0 22px;}
+  main p.lede{margin-bottom:36px;}
+
+  /* figure frame, same treatment as the hero image on PlayTogether */
+  .frame{border:1px solid var(--rule-dark); background:var(--paper-raised); padding:14px; margin:48px 0 0;}
+  .frame-caption{font-size:1rem; font-style:italic; color:var(--ink-soft); margin:14px 2px 0; max-width:none;}
+
+  /* ---------- MONITOR ---------- */
+  .monitor-shell{
+    --bg-panel:#0e1520; --line:#1e2a38; --line-soft:#161f2b;
+    --text-hi:#e8eef4; --text-mid:#9fb0bf;
+    --mono:'SF Mono','IBM Plex Mono',Menlo,Consolas,monospace;
+    border:1px solid var(--line); overflow:hidden; background:#04070a; color:var(--text-hi);
+    line-height:1.5; font-size:16px;
+  }
+  .monitor-bar{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+    padding:10px 18px; background:var(--bg-panel); border-bottom:1px solid var(--line);
+    font-family:var(--mono); font-size:11px; color:var(--text-low); letter-spacing:0.08em;
+  }
+  .monitor-bar .status-live{display:flex; align-items:center; gap:7px; color:var(--text-mid);}
+  .blip{width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;} 50%{opacity:0.25;}}
+  .monitor-top{display:grid; grid-template-columns:1fr 1fr 1fr; border-bottom:1px solid var(--line);}
+  .monitor-top .cell{padding:20px 22px; border-right:1px solid var(--line);}
+  .monitor-top .cell:last-child{border-right:none;}
+  .cell-label{font-family:var(--mono); font-size:10.5px; letter-spacing:0.14em; color:var(--text-low); text-transform:uppercase; margin-bottom:6px;}
+  .cell-value{font-family:var(--mono); font-size:clamp(2rem,3.6vw,2.7rem); font-weight:600; line-height:1; transition:color 0.4s;}
+  .cell-unit{font-family:var(--mono); font-size:11px; color:var(--text-low); margin-top:4px;}
+  .cell-target{font-family:var(--mono); font-size:10.5px; color:var(--text-low); margin-top:8px;}
+  .cell-target b{color:var(--text-mid); font-weight:600;}
+  .cell-flag{font-family:var(--mono); font-size:11px; font-weight:600; margin-top:8px; height:14px; transition:opacity 0.3s;}
+  .wave-row{display:grid; grid-template-columns:90px 1fr; border-bottom:1px solid var(--line-soft);}
+  .wave-row:last-of-type{border-bottom:1px solid var(--line);}
+  .wave-label{padding:14px 16px; border-right:1px solid var(--line);}
+  .wave-label .name{font-family:var(--mono); font-size:10.5px; color:var(--text-low); letter-spacing:0.1em;}
+  .wave-label .num{font-family:var(--mono); font-size:1.5rem; font-weight:600; margin-top:2px; transition:color 0.4s;}
+  .wave-canvas-wrap{position:relative; height:88px;}
+  .wave-canvas-wrap canvas{display:block; width:100%; height:100%;}
+  .monitor-status{
+    display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;
+    padding:14px 18px; background:var(--bg-panel); border-bottom:1px solid var(--line);
+  }
+  .banner{
+    font-family:var(--mono); font-size:12.5px; font-weight:600; letter-spacing:0.04em;
+    color:var(--text-low); transition:color 0.4s; display:flex; align-items:center; gap:8px;
+  }
+  .status-controls{display:flex; align-items:center; gap:22px;}
+  .ring-wrap{display:flex; align-items:center; gap:8px;}
+  .ring{position:relative; width:38px; height:38px;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring-num{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; font-weight:600; color:var(--text-mid);}
+  .ring-caption{font-family:var(--mono); font-size:9.5px; color:var(--text-low); letter-spacing:0.08em; text-transform:uppercase;}
+  .pacer-dot{
+    width:36px; height:36px; border-radius:50%; border:1.5px solid var(--line); margin:0 auto;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--mono); font-size:10px; font-weight:600; color:var(--text-low); transition:all 0.35s;
+  }
+  .pacer-dot.on{border-color:var(--green); color:var(--green); box-shadow:0 0 12px rgba(95,217,126,0.35);}
+  .monitor-footer{
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    padding:10px 18px; font-family:var(--mono); font-size:10.5px; color:var(--text-low); letter-spacing:0.05em;
+  }
+  .monitor-footer b{color:var(--text-mid); font-weight:500;}
+
+  /* ---------- CONTENT BLOCKS ---------- */
+  h3.card-title{font-family:var(--display); font-weight:600; font-size:1.55rem; line-height:1.2; margin:0 0 10px; color:var(--ink);}
+  .card p, .col p{font-size:1.08rem; line-height:1.65; margin:0;}
+
+  .lede-box{border-left:2px solid var(--blue); padding:4px 0 4px 26px; margin:0 0 40px;}
+  .lede-box p{margin:0; max-width:44rem;}
+
+  .cols-3{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:36px;}
+  .col{border-top:2px solid var(--blue); padding-top:18px;}
+
+  .steps{list-style:none; margin:0; padding:0; max-width:48rem;}
+  .step{display:grid; grid-template-columns:44px 1fr; gap:22px; position:relative; padding-bottom:34px;}
+  .step:not(:last-child)::before{content:''; position:absolute; left:21px; top:46px; bottom:6px; width:1px; background:var(--rule-dark);}
+  .step-num{
+    width:44px; height:44px; border-radius:50%; background:var(--blue); color:var(--paper-raised);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-weight:600; font-size:1.25rem;
+  }
+  .step h3{font-family:var(--display); font-weight:600; font-size:1.55rem; line-height:1.2; margin:6px 0 8px;}
+  .step p{font-size:1.1rem; line-height:1.65; margin:0;}
+
+  .cards-2{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px;}
+  .card{background:rgba(244,238,227,0.6); border:1px solid var(--rule-dark); padding:26px 28px;}
+  .card.ruled{border-left:2px solid var(--blue);}
+  .tag{
+    display:inline-block; font-family:var(--body); font-style:italic; font-size:0.98rem;
+    color:var(--blue); border:1px solid var(--blue-soft); background:var(--blue-wash);
+    padding:2px 14px; border-radius:999px; margin-bottom:14px;
+  }
+  .tag.navy{color:var(--ink); border-color:var(--rule-dark); background:rgba(28,32,64,0.06);}
+  .tag.brick{color:var(--brick); border-color:rgba(143,63,55,0.35); background:var(--brick-wash);}
+
+  /* concept A vs B */
+  .ab-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px;}
+  .ab-card{border:1px solid var(--rule-dark); background:rgba(244,238,227,0.6);}
+  .ab-head{padding:14px 22px; font-family:var(--display); font-weight:600; font-size:1.35rem; border-bottom:1px solid var(--rule-dark);}
+  .ab-head.a{background:var(--blue-wash); color:var(--blue);}
+  .ab-head.b{background:rgba(28,32,64,0.07); color:var(--ink);}
+  .ab-illustration{height:160px; background:var(--paper-raised); border-bottom:1px solid var(--rule-dark);}
+  .ab-body{padding:20px 24px 12px;}
+  .ab-body ul{margin:0; padding-left:20px; font-size:1.08rem; line-height:1.55; color:var(--ink-soft);}
+  .ab-body li{margin-bottom:9px;}
+
+  /* quotes */
+  .quote-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:34px 40px;}
+  .qcard{border-left:2px solid var(--blue); padding:2px 0 2px 22px; margin:0;}
+  .qtext{font-family:var(--display); font-style:italic; font-size:1.4rem; line-height:1.4; color:var(--ink); margin:0 0 12px; max-width:none;}
+  .qsource{font-size:0.98rem; color:var(--ink-soft); margin:0 0 4px; line-height:1.4;}
+  .qoutcome{font-size:1rem; color:var(--blue); margin:0; line-height:1.4;}
+
+  /* user testing */
+  .photo-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:22px;}
+  .photo-frame{
+    border:1px dashed var(--rule-dark); aspect-ratio:16/10; background:rgba(244,238,227,0.5);
+    display:flex; align-items:center; justify-content:center; flex-direction:column; gap:10px;
+    color:var(--ink-soft); font-style:italic; font-size:1.05rem; line-height:1.45; text-align:center; padding:22px;
+  }
+  .photo-frame .icon{font-size:1.8rem; color:var(--blue); font-style:normal;}
+
+  /* goals */
+  .goal-list{border-top:1px solid var(--rule-dark);}
+  .goal-row{display:grid; grid-template-columns:200px 1fr; gap:28px; padding:26px 0; border-bottom:1px solid var(--rule-dark); align-items:start;}
+  .goal-id{
+    font-family:var(--display); font-weight:600; font-size:1.15rem; color:var(--paper-raised); background:var(--blue);
+    display:inline-flex; padding:4px 16px; border-radius:999px; height:fit-content; width:fit-content; line-height:1.4;
+  }
+  .goal-body h4{font-family:var(--display); font-weight:600; font-size:1.5rem; line-height:1.25; margin:0 0 8px;}
+  .goal-body p{font-size:1.08rem; line-height:1.65; margin:0;}
+  .link-bar{
+    margin-top:34px; padding:18px 24px; border:1px solid var(--rule-dark); background:rgba(244,238,227,0.6);
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;
+  }
+  .link-bar span{font-family:var(--display); font-weight:600; font-size:1.2rem;}
+  .link-bar a{font-size:1.1rem;}
+
+  /* before and after */
+  .ba-table{border:1px solid var(--rule-dark);}
+  .ba-header, .ba-row{display:grid; grid-template-columns:1fr 44px 1fr;}
+  .ba-header div{padding:14px 22px; font-family:var(--display); font-weight:600; font-size:1.25rem;}
+  .ba-header .old{background:var(--brick-wash); color:var(--brick);}
+  .ba-header .gap{background:rgba(244,238,227,0.6);}
+  .ba-header .new{background:var(--blue-wash); color:var(--blue);}
+  .ba-row{border-top:1px solid var(--rule-dark); align-items:stretch;}
+  .ba-row > div{padding:18px 22px; font-size:1.05rem; line-height:1.55;}
+  .ba-row .old{color:var(--ink-soft);}
+  .ba-row .new{color:var(--ink);}
+  .ba-row .arrow{display:flex; align-items:center; justify-content:center; color:var(--blue); padding:0; background:rgba(244,238,227,0.6);}
+  .ba-caption{font-size:1rem; font-style:italic; color:var(--ink-soft); margin:16px 0 0; max-width:none;}
+
+  /* closing */
+  .closing{border-top:1px solid var(--rule-dark); padding-top:72px; margin-bottom:40px;}
+  .closing h2{margin-bottom:30px;}
+  .btn-row{display:flex; gap:14px; flex-wrap:wrap; margin-top:32px;}
+  .btn{
+    font-family:var(--display); font-weight:600; font-size:1.2rem; padding:11px 30px; border-radius:999px;
+    border:1px solid var(--rule-dark); color:var(--ink); text-decoration:none; transition:all 0.2s;
+  }
+  .btn:hover{text-decoration:none; border-color:var(--blue); color:var(--blue);}
+  .btn.primary{background:var(--blue); border-color:var(--blue); color:var(--paper-raised);}
+  .btn.primary:hover{background:var(--ink); border-color:var(--ink); color:var(--paper-raised);}
+
+  footer{
+    margin-top:40px; padding:28px 0 8px; border-top:1px solid var(--rule-dark);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; font-size:1rem; color:var(--ink-soft);
+  }
+  footer p{margin:0; font-size:1rem;}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr;}
+    aside.sidebar{position:relative; height:auto; overflow:visible; border-right:none; border-bottom:1px solid var(--rule-dark); padding:14px 24px 44px;}
+    .sidebar-body{padding-left:8px;}
+    .side-block{margin-top:36px;}
+    main{padding:56px 24px 32px;}
+    main section{margin-bottom:96px;}
+  }
+  @media (max-width:760px){
+    .goal-row{grid-template-columns:1fr; gap:10px;}
+    .ba-header, .ba-row{grid-template-columns:1fr;}
+    .ba-header .gap, .ba-row .arrow{display:none;}
+    .monitor-top{grid-template-columns:1fr;}
+    .monitor-top .cell{border-right:none; border-bottom:1px solid var(--line);}
+    .monitor-top .cell:last-child{border-bottom:none;}
+    .frame{padding:8px;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .blip{animation:none;}
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="deco" aria-hidden="true"><span class="l1"></span><span class="l2"></span><span class="l3"></span><span class="dot"></span></div>
+
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <a class="back" href="design-projects.html">← Back to projects</a>
+    <div class="sidebar-body">
+      <h1 class="title">NeoVital</h1>
+      <p class="tagline">Redesigning the neonatal resuscitation display</p>
+
+      <div class="side-block">
+        <h3>Challenge</h3>
+        <p>Rebuild the neonatal resuscitation monitor so clinicians can read risk at a glance under extreme time pressure, for Design 141, Design Methods.</p>
+      </div>
+
+      <div class="side-block">
+        <h3>Team</h3>
+        <p>Audrey, Vasco, Sienna</p>
+      </div>
+
+      <div class="side-block">
+        <h3>My Role</h3>
+        <p>Cognitive task analysis, prototyping, evaluation</p>
+      </div>
+
+      <div class="side-block">
+        <h3>Skills</h3>
+        <ul class="skills">
+          <li>Cognitive task analysis (HTA)</li>
+          <li>Ideation</li>
+          <li>Paper prototyping</li>
+          <li>Wizard-of-Oz testing</li>
+          <li>Heuristic evaluation</li>
+          <li>Interactive wireframing in Framer</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <section id="about">
+      <h2>About NeoVital</h2>
+      <p>Every second in the delivery room is a cognitive load problem. NeoVital rebuilds the NRP monitor around the way clinicians actually perceive risk under pressure. Color comes before numbers, phase before data, and motion before math.</p>
+      <p>I worked on it with Vasco and Sienna for Design 141, Design Methods, at Stanford University. My role covered cognitive task analysis, prototyping, and evaluation, and the final output is an interactive Framer wireframe.</p>
+
+      <div class="frame">
+        <!-- LIVE MONITOR SIMULATION -->
+        <div class="monitor-shell" id="monitor">
+          <div class="monitor-bar">
+            <span>NEOVITAL MONITOR · SIMULATED PATIENT</span>
+            <span class="status-live"><span class="blip"></span> LIVE SIMULATION</span>
+          </div>
+
+          <div class="monitor-top">
+            <div class="cell">
+              <div class="cell-label">Temperature</div>
+              <div class="cell-value" id="v-temp" style="color:var(--amber);">36.8</div>
+              <div class="cell-unit">°C</div>
+              <div class="cell-target">Target <b>36 to 37.5°C</b></div>
+            </div>
+            <div class="cell">
+              <div class="cell-label">Heart Rate</div>
+              <div class="cell-value" id="v-hr">153</div>
+              <div class="cell-unit">bpm</div>
+              <div class="cell-flag" id="hr-flag"></div>
+            </div>
+            <div class="cell">
+              <div class="cell-label">SpO₂</div>
+              <div class="cell-value" id="v-spo2" style="color:var(--amber);">99</div>
+              <div class="cell-unit">%</div>
+              <div class="cell-target">Target @0min <b>&lt;60%</b></div>
+            </div>
+          </div>
+
+          <div class="wave-row">
+            <div class="wave-label">
+              <div class="name">ECG</div>
+              <div class="num" id="w-hr">153</div>
+              <div class="cell-unit">bpm</div>
+            </div>
+            <div class="wave-canvas-wrap"><canvas id="ecg-canvas"></canvas></div>
+          </div>
+          <div class="wave-row">
+            <div class="wave-label">
+              <div class="name">SpO₂</div>
+              <div class="num" id="w-spo2" style="color:var(--amber);">99</div>
+              <div class="cell-unit">%</div>
+            </div>
+            <div class="wave-canvas-wrap"><canvas id="spo2-canvas"></canvas></div>
+          </div>
+
+          <div class="monitor-status">
+            <div class="banner" id="ppv-banner">⚠ <span id="banner-text">STABLE</span></div>
+            <div class="status-controls">
+              <div class="ring-wrap">
+                <div class="ring">
+                  <svg width="38" height="38" viewBox="0 0 38 38">
+                    <circle cx="19" cy="19" r="16" fill="none" stroke="#1e2a38" stroke-width="3"/>
+                    <circle id="reassess-ring" cx="19" cy="19" r="16" fill="none" stroke="var(--amber)" stroke-width="3"
+                      stroke-dasharray="100.5" stroke-dashoffset="0" stroke-linecap="round"/>
+                  </svg>
+                  <div class="ring-num" id="reassess-num">30</div>
+                </div>
+                <div class="ring-caption">Reassess</div>
+              </div>
+              <div>
+                <div class="pacer-dot" id="pacer-dot">OUT</div>
+                <div class="ring-caption" style="text-align:center; margin-top:6px;">PPV Pacer</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="monitor-footer">
+            <span>PHASE <b id="phase-label">Initial Assessment</b> · Elapsed <b id="elapsed">00:00</b></span>
+            <span>DOB 04/08/2026 · Weight 100g · Provider Dr. Choi</span>
+          </div>
+        </div>
+      </div>
+      <p class="frame-caption">A live simulation of the monitor, cycling through stable monitoring, desaturation, PPV, and recovery.</p>
+    </section>
+
+    <section id="problem">
+      <h2>The Problem</h2>
+      <div class="lede-box">
+        <p>Neonatal resuscitation requires clinicians to rapidly interpret heart rate, initiate ventilation, and coordinate compressions, all under extreme time pressure. Current displays demand too much cognitive work, increasing the risk of critical errors.</p>
+      </div>
+      <div class="cols-3">
+        <div class="col">
+          <h3 class="card-title">Threshold ambiguity</h3>
+          <p>Clinicians must mentally compare raw numbers to memorized cutoffs (SpO₂ &lt; 60 → PPV, HR &lt; 60 → compressions), increasing errors under stress.</p>
+        </div>
+        <div class="col">
+          <h3 class="card-title">Cognitive overload</h3>
+          <p>Tracking multiple vitals, managing 30-second timers, and the PPV pacer simultaneously exceeds working memory capacity.</p>
+        </div>
+        <div class="col">
+          <h3 class="card-title">Coordination breakdown</h3>
+          <p>No shared display cue ensures the whole team knows which protocol phase they're in, causing hesitation and miscommunication.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <h2>Our prototyping evolution</h2>
+      <p class="lede">Five stages, each converting a specific human-factors risk into a testable design decision.</p>
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num">1</div>
+          <div>
+            <h3>Cognitive task analysis</h3>
+            <p>An HTA table mapped 5 subtasks, which were HR detection, PPV decision, PPV timing, compressions decision, and compression timing. It also identified human factors risks.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">2</div>
+          <div>
+            <h3>Ideation, 45 strategies</h3>
+            <p>Each team member generated 9 strategies per subtask, exploring color coding, trajectory vectors, metronomes, spatial zones, and audio cues.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">3</div>
+          <div>
+            <h3>Paper prototypes A and B</h3>
+            <p>Concept A is a phase-adapting circular display. Concept B uses perceptual and biological motion metaphors. Both were video-demoed with Wizard-of-Oz testing.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">4</div>
+          <div>
+            <h3>Heuristic evaluations</h3>
+            <p>Cross-team evaluation using ISSA/Nielsen heuristics. Feedback on clutter, information hierarchy, consistency, and threshold salience.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num">5</div>
+          <div>
+            <h3>Interactive wireframe</h3>
+            <p>Merged the best of A and B in Framer with five major changes, including persistent HR, escalation banners, phase labels, rhythm animation, and a clearer 3:1 cue.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section id="ideation">
+      <h2>45 interface strategies</h2>
+      <p class="lede">45 total strategies generated across 5 subtasks by all three team members. Here is a sample of the range explored.</p>
+      <div class="cards-2">
+        <div class="card ruled">
+          <span class="tag">Subtask 1 · HR Detection</span>
+          <h3 class="card-title">Color-coded status ring</h3>
+          <p>Replace numeric HR with a massive color ring (green/yellow/red). Eliminates threshold recall, so the clinician acts on color shift alone.</p>
+        </div>
+        <div class="card ruled">
+          <span class="tag">Subtask 1 · HR Detection</span>
+          <h3 class="card-title">Trajectory vector bar</h3>
+          <p>Show HR as a moving slider, not just a number. Arrow direction shows if the patient is improving or crashing, giving momentum at a glance.</p>
+        </div>
+        <div class="card ruled">
+          <span class="tag">Subtask 4 · Compressions</span>
+          <h3 class="card-title">Urgency takeover screen</h3>
+          <p>When HR &lt; 60, the normal UI disappears and a bold red screen reads “START COMPRESSIONS.” Forces immediate action.</p>
+        </div>
+        <div class="card ruled">
+          <span class="tag">Subtask 3 · PPV Timing</span>
+          <h3 class="card-title">30s ventilation checklist</h3>
+          <p>After 30 seconds of PPV, a checklist appears with chest rise, MR SOPA, and whether HR is still &lt; 60. Prevents premature escalation.</p>
+        </div>
+        <div class="card ruled">
+          <span class="tag">Subtask 5 · Compression Rhythm</span>
+          <h3 class="card-title">3:1 compression indicator</h3>
+          <p>Blinking ring cycles through 3 red pulses (compress) then 1 blue pulse (breathe). Eliminates mental counting of the ratio.</p>
+        </div>
+        <div class="card ruled">
+          <span class="tag">Subtask 3 · PPV Timing</span>
+          <h3 class="card-title">Animated lung pacing</h3>
+          <p>Lungs on screen expand and contract at the target ventilation rate. Providers sync bag squeezes to biological motion, so no counting is needed.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="prototypes">
+      <h2>Paper prototypes</h2>
+      <p class="lede">Two competing hypotheses about how clinicians actually process risk. Concept A bets on abstraction through color, and Concept B bets on intuition through motion.</p>
+      <div class="ab-grid">
+        <div class="ab-card">
+          <div class="ab-head a">Concept A · Phase-Adaptive Display</div>
+          <div class="ab-illustration">
+            <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Circular heart rate ring split into green, yellow and red zones">
+              <circle cx="150" cy="75" r="46" fill="none" stroke="#4f9d6e" stroke-width="8" stroke-dasharray="180 300" stroke-linecap="round" transform="rotate(-90 150 75)"/>
+              <circle cx="150" cy="75" r="46" fill="none" stroke="#d9a441" stroke-width="8" stroke-dasharray="60 300" stroke-dashoffset="-180" stroke-linecap="round" transform="rotate(-90 150 75)"/>
+              <circle cx="150" cy="75" r="46" fill="none" stroke="#c0504d" stroke-width="8" stroke-dasharray="60 300" stroke-dashoffset="-240" stroke-linecap="round" transform="rotate(-90 150 75)"/>
+              <text x="150" y="84" text-anchor="middle" fill="#1c2040" font-family="Cormorant Garamond, Georgia, serif" font-size="30" font-weight="600">100</text>
+            </svg>
+          </div>
+          <div class="ab-body">
+            <ul>
+              <li>Color-coded circular HR ring (green / yellow / red)</li>
+              <li>30-second reassessment timer</li>
+              <li>Algorithm step tracker (left panel)</li>
+              <li>3:1 visual compression metronome</li>
+            </ul>
+          </div>
+        </div>
+        <div class="ab-card">
+          <div class="ab-head b">Concept B · Perceptual and Biological Motion</div>
+          <div class="ab-illustration">
+            <svg width="100%" height="100%" viewBox="0 0 300 150" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Overlaid current and target heart rate waveforms with a heart shape">
+              <path d="M20,110 Q60,20 100,80 T180,60 T260,90" fill="none" stroke="#2b6396" stroke-width="2.5" opacity="0.95"/>
+              <path d="M20,120 Q60,40 100,95 T180,75 T260,100" fill="none" stroke="#1c2040" stroke-width="2" stroke-dasharray="4 3" opacity="0.55"/>
+              <path d="M150,50 C130,35 110,50 120,70 C125,85 150,105 150,105 C150,105 175,85 180,70 C190,50 170,35 150,50 Z" fill="#c0504d" opacity="0.5"/>
+            </svg>
+          </div>
+          <div class="ab-body">
+            <ul>
+              <li>Split-screen HR trend vs. target trajectory</li>
+              <li>Animated lungs for PPV pacing</li>
+              <li>Spatial danger and safe zones instead of numbers</li>
+              <li>Persistent compression-required banner</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="evaluations">
+      <h2>Heuristic evaluations and breakthrough moments</h2>
+      <p class="lede">These insights come from the DP2.2 heuristic evaluations, a cross-team review.</p>
+      <div class="cards-2">
+        <div class="card">
+          <span class="tag">Prototype A Feedback</span>
+          <h3 class="card-title">The button problem</h3>
+          <p>Evaluators flagged that pressing a button to reveal the HR popup was dangerous, since clinicians' hands are occupied during resuscitation. This led to event-triggered, threshold-based pop-up displays instead.</p>
+        </div>
+        <div class="card">
+          <span class="tag brick">Cross-Team Feedback</span>
+          <h3 class="card-title">Too much, too dense</h3>
+          <p>Multiple evaluators independently noted information overload. Not knowing where to look was a common observation for Prototype A. This drove the decision to adopt phase-based progressive disclosure.</p>
+        </div>
+        <div class="card">
+          <span class="tag">Prototype A Feedback</span>
+          <h3 class="card-title">Redundancy = clarity</h3>
+          <p>The 30-second timer and the reassessment bar at the bottom served the same purpose. Combining them into one countdown display reduced visual clutter while preserving the key information.</p>
+        </div>
+        <div class="card">
+          <span class="tag navy">Prototype B Feedback</span>
+          <h3 class="card-title">Overlay vs. split screen</h3>
+          <p>For Prototype B's split-screen HR graph, evaluators suggested overlaying current vs. target waveforms on the same graph, enabling direct visual comparison without split attention.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="quotes">
+      <h2>Evaluator quotes and annotations</h2>
+      <div class="quote-grid">
+        <blockquote class="qcard">
+          <p class="qtext">“Information was always present but very small — difficult to find when needed because of content overload.”</p>
+          <p class="qsource">Evaluator, Prototype A, demo in class</p>
+          <p class="qoutcome">→ Drove phase-based progressive disclosure</p>
+        </blockquote>
+        <blockquote class="qcard">
+          <p class="qtext">“Good info, just too cluttered. Space it into related categories so people know where to look.”</p>
+          <p class="qsource">Evaluator, Prototype A, written feedback</p>
+          <p class="qoutcome">→ Confirmed need for grouped, task-relevant zones</p>
+        </blockquote>
+        <blockquote class="qcard">
+          <p class="qtext">“A visual representation of a stable HR as comparison — what might this look like as an overlay on the same graph?”</p>
+          <p class="qsource">Instructor crit, Prototype B</p>
+          <p class="qoutcome">→ Led to overlaid current vs. target waveform</p>
+        </blockquote>
+        <blockquote class="qcard">
+          <p class="qtext">“Why the need to press a button to make the HR popup visible? A doctor's hands are most probably full.”</p>
+          <p class="qsource">Instructor crit, Prototype A</p>
+          <p class="qoutcome">→ All threshold-crossing events now auto-trigger</p>
+        </blockquote>
+        <blockquote class="qcard">
+          <p class="qtext">“HR values show up differently between tasks — hard to follow when switching. Keep important values in the same place.”</p>
+          <p class="qsource">Evaluator, Prototype B, written feedback</p>
+          <p class="qoutcome">→ HR keeps fixed position and color across phases</p>
+        </blockquote>
+        <blockquote class="qcard">
+          <p class="qtext">“The timer and reassessment bar could be combined — the HR popup might not be necessary if the central dial shows heart rate.”</p>
+          <p class="qsource">Instructor crit, Prototype A</p>
+          <p class="qoutcome">→ Merged into one elapsed-time countdown</p>
+        </blockquote>
+      </div>
+    </section>
+
+    <section id="testing">
+      <h2>User testing</h2>
+      <p class="lede">Wizard-of-Oz sessions with a resuscitation mannequin and a live wireframe running on a secondary display.</p>
+      <div class="photo-grid">
+        <div class="photo-frame"><span class="icon">◉</span>Live monitor mirrored to overhead display during mannequin-based walkthrough</div>
+        <div class="photo-frame"><span class="icon">▤</span>Provider interacting with the Framer prototype mid-simulation, tracking real-time vitals</div>
+      </div>
+    </section>
+
+    <section id="final-design">
+      <h2>How our design achieves its goals</h2>
+      <div class="goal-list">
+        <div class="goal-row">
+          <div class="goal-id">T1 · Heart Rate</div>
+          <div class="goal-body">
+            <h4>Persistent large numeric HR with ECG trend overlay</h4>
+            <p>Color shifts at thresholds auto-trigger, so no button press is required. Clinicians recognize red / yellow / green without recalling numbers.</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-id">T2 · Decide PPV</div>
+          <div class="goal-body">
+            <h4>Visible elapsed-time countdown with high-contrast PPV banner</h4>
+            <p>The 30-second rule becomes a visible countdown. A bright escalation banner appears automatically when HR stays below threshold.</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-id">T3 · PPV Timing</div>
+          <div class="goal-body">
+            <h4>Animated breathing circle / metronome</h4>
+            <p>Providers sync bag squeezes to biological motion. The animation slows or signals if rhythm drifts, so no counting is required.</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-id">T4 · Decide Compressions</div>
+          <div class="goal-body">
+            <h4>Full-screen red escalation state at HR &lt; 60</h4>
+            <p>A spatial danger zone makes the threshold unambiguous. A “compressions indicated” banner appears only after effective ventilation is confirmed.</p>
+          </div>
+        </div>
+        <div class="goal-row">
+          <div class="goal-id">T5 · Pacer Rhythm</div>
+          <div class="goal-body">
+            <h4>IN / OUT visual cue with live HR trend</h4>
+            <p>Provides pacer support. The team can see HR recovering in real time as the live ECG updates.</p>
+          </div>
+        </div>
+      </div>
+      <div class="link-bar">
+        <span>Interactive wireframe</span>
+        <a href="https://conclusive-everyone-965610.framer.app/" target="_blank" rel="noopener">conclusive-everyone-965610.framer.app →</a>
+      </div>
+    </section>
+
+    <section id="before-after">
+      <h2>Before and after, compared to the baseline</h2>
+      <div class="ba-table">
+        <div class="ba-header">
+          <div class="old">Baseline design, paper prototype</div>
+          <div class="gap"></div>
+          <div class="new">Final wireframe, Framer</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">HR displayed as plain number, requiring mental threshold comparison</div>
+          <div class="arrow">→</div>
+          <div class="new">HR embedded in a color-coded zone, so crossing a threshold triggers an automatic visual shift</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">Button tap required to surface HR popup during resuscitation</div>
+          <div class="arrow">→</div>
+          <div class="new">Event-driven triggers. All threshold states auto-surface, no hands needed</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">Two separate timers (countdown + reassessment bar) caused redundancy</div>
+          <div class="arrow">→</div>
+          <div class="new">Single merged elapsed-time display directly tied to HR response</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">Split-screen current vs. target HR forced split attention between graphs</div>
+          <div class="arrow">→</div>
+          <div class="new">Overlaid single graph with current vs. target in the same visual space</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">No explicit phase label, so the team was unsure which protocol step was active</div>
+          <div class="arrow">→</div>
+          <div class="new">Phase banner (e.g. “PPV Mode”) always visible at bottom of screen</div>
+        </div>
+        <div class="ba-row">
+          <div class="old">3:1 compression ratio required mental counting</div>
+          <div class="arrow">→</div>
+          <div class="new">Animated PPV pacer, so the team follows rather than counts</div>
+        </div>
+      </div>
+      <p class="ba-caption">Design changes validated by heuristic evaluations from two external teams and instructor crit feedback (DP2.2).</p>
+    </section>
+
+    <div class="closing">
+      <h2>See it respond in real time</h2>
+      <p>The full interactive wireframe reproduces every threshold behavior above. It was built in Framer and tested against a live resuscitation simulation.</p>
+      <div class="btn-row">
+        <a class="btn primary" href="https://conclusive-everyone-965610.framer.app/" target="_blank" rel="noopener">Open interactive wireframe</a>
+        <a class="btn" href="design-projects.html">Back to projects</a>
+      </div>
+    </div>
+
+    <footer>
+      <p>NeoVital · Design 141, Design Methods · Stanford University</p>
+      <p>Audrey Choi · Vasco · Sienna</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  const els = {
+    temp: document.getElementById('v-temp'),
+    hr: document.getElementById('v-hr'),
+    spo2: document.getElementById('v-spo2'),
+    wHr: document.getElementById('w-hr'),
+    wSpo2: document.getElementById('w-spo2'),
+    hrFlag: document.getElementById('hr-flag'),
+    banner: document.getElementById('ppv-banner'),
+    bannerText: document.getElementById('banner-text'),
+    ring: document.getElementById('reassess-ring'),
+    ringNum: document.getElementById('reassess-num'),
+    pacer: document.getElementById('pacer-dot'),
+    phase: document.getElementById('phase-label'),
+    elapsed: document.getElementById('elapsed'),
+  };
+
+  const ecgCanvas = document.getElementById('ecg-canvas');
+  const spo2Canvas = document.getElementById('spo2-canvas');
+  const ecgCtx = ecgCanvas.getContext('2d');
+  const spo2Ctx = spo2Canvas.getContext('2d');
+
+  function resizeCanvas(c){
+    const rect = c.getBoundingClientRect();
+    c.width = rect.width * devicePixelRatio;
+    c.height = rect.height * devicePixelRatio;
+  }
+  function resizeAll(){ resizeCanvas(ecgCanvas); resizeCanvas(spo2Canvas); }
+  resizeAll();
+  window.addEventListener('resize', resizeAll);
+
+  const rootStyle = getComputedStyle(document.documentElement);
+  const C = {
+    red: rootStyle.getPropertyValue('--red').trim(),
+    amber: rootStyle.getPropertyValue('--amber').trim(),
+    green: rootStyle.getPropertyValue('--green').trim(),
+    low: rootStyle.getPropertyValue('--text-low').trim(),
+  };
+
+  // scripted timeline (seconds): 0-8 stable, 8-14 desat begins, 14-34 PPV with recovery, 34-44 stable, then loop
+  const CYCLE = 44;
+  let startTime = performance.now();
+
+  function lerp(a,b,t){ return a + (b-a)*Math.min(Math.max(t,0),1); }
+
+  function getState(t){
+    if (t < 8){
+      const p = t/8;
+      return { hr: Math.round(lerp(153,148,p)), spo2: Math.round(lerp(99,97,p)), mode:'stable' };
+    } else if (t < 14){
+      const p = (t-8)/6;
+      return { hr: Math.round(lerp(148,72,p)), spo2: Math.round(lerp(97,58,p)), mode:'declining' };
+    } else if (t < 34){
+      const p = (t-14)/20;
+      const hr = Math.round(lerp(72,150,Math.min(p*1.15,1)));
+      const spo2 = Math.round(lerp(58,96,p));
+      return { hr, spo2, mode:'ppv', reassess: Math.max(0, 30 - (t-14)) };
+    } else {
+      const p = (t-34)/(CYCLE-34);
+      return { hr: Math.round(lerp(150,153,p)), spo2: Math.round(lerp(96,99,p)), mode:'stable' };
+    }
+  }
+
+  function colorForHR(hr){ return hr < 60 ? C.red : hr < 100 ? C.amber : C.green; }
+  function colorForSpo2(s){ return s < 60 ? C.red : s < 90 ? C.amber : C.green; }
+
+  let pacerOn = false;
+  let lastPacerToggle = 0;
+
+  function formatElapsed(s){
+    const m = Math.floor(s/60).toString().padStart(2,'0');
+    const sec = Math.floor(s%60).toString().padStart(2,'0');
+    return m+':'+sec;
+  }
+
+  function update(t){
+    const state = getState(t);
+    const hrColor = colorForHR(state.hr);
+    const spo2Color = colorForSpo2(state.spo2);
+
+    els.hr.textContent = state.hr;
+    els.hr.style.color = hrColor;
+    els.wHr.textContent = state.hr;
+    els.wHr.style.color = hrColor;
+
+    els.spo2.textContent = state.spo2;
+    els.spo2.style.color = spo2Color;
+    els.wSpo2.textContent = state.spo2;
+    els.wSpo2.style.color = spo2Color;
+
+    if (state.hr < 60){
+      els.hrFlag.textContent = 'Start Compression';
+      els.hrFlag.style.color = hrColor;
+      els.hrFlag.style.opacity = 1;
+    } else {
+      els.hrFlag.style.opacity = 0;
+    }
+
+    if (state.mode === 'ppv'){
+      els.banner.classList.add('active');
+      els.bannerText.textContent = 'PPV ACTIVE';
+      els.banner.style.color = C.red;
+      els.phase.textContent = 'PPV Active';
+
+      const reassess = state.reassess ?? 30;
+      const frac = reassess/30;
+      els.ring.setAttribute('stroke-dashoffset', (100.5 * (1-frac)).toFixed(1));
+      els.ringNum.textContent = Math.ceil(reassess);
+
+      if (t - lastPacerToggle > 0.8){
+        pacerOn = !pacerOn;
+        lastPacerToggle = t;
+      }
+      els.pacer.textContent = pacerOn ? 'IN' : 'OUT';
+      els.pacer.classList.toggle('on', pacerOn);
+    } else {
+      els.banner.classList.remove('active');
+      els.bannerText.textContent = state.mode === 'declining' ? 'MONITORING' : 'STABLE';
+      els.banner.style.color = state.mode === 'declining' ? C.amber : C.low;
+      els.phase.textContent = state.mode === 'declining' ? 'Initial Assessment' : 'Stable Monitoring';
+      els.ring.setAttribute('stroke-dashoffset', '0');
+      els.ringNum.textContent = '—';
+      els.pacer.textContent = 'OUT';
+      els.pacer.classList.remove('on');
+    }
+
+    return state;
+  }
+
+  const ecgBuffer = [];
+  const spo2Buffer = [];
+  const BUFFER_LEN = 240;
+  for (let i=0;i<BUFFER_LEN;i++){ ecgBuffer.push(0); spo2Buffer.push(0.5); }
+
+  function ecgSample(phase){
+    const b = phase % 1;
+    if (b < 0.04) return Math.sin(b/0.04*Math.PI)*0.15;
+    if (b < 0.06) return -0.1;
+    if (b < 0.09) return (b-0.06)/0.03 * 1.0;
+    if (b < 0.11) return 1.0 - (b-0.09)/0.02 * 1.3;
+    if (b < 0.14) return -0.3 + (b-0.11)/0.03*0.3;
+    if (b < 0.30) return Math.sin((b-0.14)/0.16*Math.PI)*0.2;
+    return 0;
+  }
+
+  let beatAccum = 0;
+  let lastFrameTime = performance.now();
+
+  function drawWave(ctx, canvas, buffer, color){
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2 * devicePixelRatio;
+    ctx.lineJoin = 'round';
+    const step = w/(buffer.length-1);
+    for (let i=0;i<buffer.length;i++){
+      const x = i*step;
+      const y = h/2 - buffer[i]*(h*0.42);
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  function frame(now){
+    const dt = (now - lastFrameTime)/1000;
+    lastFrameTime = now;
+
+    const t = ((now - startTime)/1000) % CYCLE;
+    const state = update(t);
+
+    beatAccum += dt * (state.hr/60);
+    ecgBuffer.shift();
+    ecgBuffer.push(ecgSample(beatAccum));
+
+    const spo2Phase = (now/1000) * (state.spo2/60);
+    spo2Buffer.shift();
+    spo2Buffer.push(Math.sin(spo2Phase*2*Math.PI) * 0.35 + Math.sin(spo2Phase*4*Math.PI)*0.08);
+
+    drawWave(ecgCtx, ecgCanvas, ecgBuffer, colorForHR(state.hr));
+    drawWave(spo2Ctx, spo2Canvas, spo2Buffer, colorForSpo2(state.spo2));
+
+    els.elapsed.textContent = formatElapsed(t);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
