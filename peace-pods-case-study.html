@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Peace Pods – Audrey Choi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ece4d4; --ink:#1c2a20; --body:#3a4a40; --muted:#7f8576; --line:#cfc5b2;
+  --amber:#2f6b47; --amber-soft:#b9d3c2; --paper:#f4efe4;
+  --serif:'EB Garamond','Cormorant Garamond',Georgia,serif;
+  --display:'Cormorant Garamond','EB Garamond',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.75;-webkit-font-smoothing:antialiased}
+a:focus-visible,button:focus-visible{outline:2px solid var(--amber);outline-offset:3px}
+
+.branch{position:fixed;pointer-events:none;stroke:#c3b8a3;fill:none;stroke-width:1.2;z-index:0}
+.branch ellipse{fill:var(--amber-soft);stroke:none;opacity:.8}
+.b1{top:0;left:0;width:170px}
+.b2{bottom:0;right:0;width:170px;transform:rotate(180deg)}
+
+.back{position:fixed;top:28px;left:44px;font-size:16px;color:var(--ink);text-decoration:none;z-index:5;padding:7px 18px;border:1px solid var(--line);border-radius:999px;background:var(--bg);transition:border-color .2s}
+.back:hover{border-color:var(--amber)}
+
+.wrap{display:grid;grid-template-columns:minmax(300px,34%) 1fr;min-height:100vh;position:relative;z-index:1}
+aside{position:sticky;top:0;height:100vh;padding:120px 52px 56px 64px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:34px;overflow-y:auto}
+aside h1{font-family:var(--display);font-weight:500;font-size:clamp(46px,5vw,68px);line-height:1.02;letter-spacing:-.01em}
+aside .sub{font-style:italic;color:var(--amber);margin-top:14px;font-size:22px;font-family:var(--display);font-weight:600}
+.meta{display:flex;flex-direction:column;gap:22px}
+.meta h3{font-family:var(--display);font-weight:600;font-size:20px;margin-bottom:4px}
+.meta p,.meta li{font-size:17px;color:var(--body);line-height:1.6}
+.meta ul{list-style:none}
+.meta li::before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--amber);margin-right:12px;vertical-align:middle}
+
+main{padding:120px 72px 140px 72px;max-width:1000px}
+section{margin-bottom:104px}
+h2{font-family:var(--display);font-weight:500;font-size:clamp(32px,3.4vw,44px);line-height:1.15;margin-bottom:20px}
+h3{font-family:var(--display);font-weight:600;font-size:26px;margin:56px 0 18px}
+.rule{width:60px;height:2px;background:var(--amber);margin:0 0 28px}
+p{max-width:62ch;margin-bottom:1em;color:var(--body)}
+p a{color:var(--ink);text-decoration-color:var(--amber);text-underline-offset:3px}
+figcaption{font-style:italic;color:var(--muted);font-size:16px;margin-top:10px}
+
+.persona{border-top:1px solid var(--line);margin-top:18px;max-width:62ch}
+.persona div b{font-weight:500;color:var(--ink)}
+.persona div{padding:12px 0;border-bottom:1px solid var(--line);color:var(--body)}
+
+.quote{max-width:62ch;margin:0 0 18px;padding:2px 0 2px 22px;border-left:2px solid var(--amber);font-family:var(--display);font-style:italic;font-size:23px;line-height:1.45;color:var(--ink)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin:30px 0}
+.stat b{display:block;font-family:var(--display);font-weight:500;font-size:clamp(38px,4.4vw,56px);line-height:1;color:var(--amber)}
+.stat span{display:block;margin-top:8px;font-size:16px;color:var(--muted);line-height:1.45}
+
+.slide{margin:36px 0 0}
+.slide button{display:block;width:100%;border:1px solid var(--line);background:var(--paper);padding:10px;cursor:zoom-in;line-height:0;transition:border-color .2s}
+.slide button:hover{border-color:var(--amber)}
+.slide img{width:100%;height:auto;display:block}
+
+/* concept gallery */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0 26px}
+.filters button{font-family:var(--display);font-weight:600;font-size:19px;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:999px;padding:4px 20px;cursor:pointer;transition:all .2s}
+.filters button:hover{border-color:var(--amber)}
+.filters button.active{background:var(--amber);border-color:var(--amber);color:var(--paper)}
+.concepts{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.concept{text-align:left;font:inherit;color:inherit;background:var(--paper);border:1px solid var(--line);padding:18px 20px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .2s}
+.concept:hover{border-color:var(--amber)}
+.concept[hidden]{display:none}
+.concept .who{font-style:italic;font-size:15px;color:var(--amber)}
+.concept h4{font-family:var(--display);font-weight:600;font-size:22px;line-height:1.2;color:var(--ink)}
+.concept p{font-size:16px;line-height:1.5;margin:0;color:var(--body)}
+.concept .view{margin-top:auto;padding-top:8px;font-size:15px;font-style:italic;color:var(--muted)}
+
+.fb{font-style:italic;color:var(--muted);font-size:17px}
+
+/* simulation player */
+.player{border:1px solid var(--line);background:var(--paper);padding:10px;margin-top:30px}
+.stage{position:relative;aspect-ratio:760/340;overflow:hidden;background:#0f151e}
+.scene{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;pointer-events:none}
+.scene.active{opacity:1}
+.scene svg{width:100%;height:100%;display:block}
+.pcap{padding:16px 6px 4px}
+.pcap .caption{font-family:var(--display);font-weight:600;font-size:26px;line-height:1.2;color:var(--ink)}
+.pcap .subcaption{color:var(--body);font-size:17px;margin-top:2px}
+.stress{display:flex;align-items:center;gap:14px;padding:10px 6px 4px;font-size:16px;color:var(--muted)}
+.stress .track{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.stress .fill{height:100%;width:88%;background:#c0504d;transition:width .8s ease,background .8s ease}
+.stress .val{min-width:3ch;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.controls{display:flex;align-items:center;gap:16px;padding:10px 6px 8px}
+.play-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.play-btn:hover{border-color:var(--amber)}
+.play-btn svg{width:16px;height:16px}
+.dots{display:flex;gap:8px}
+.dots .d{width:10px;height:10px;border-radius:50%;background:var(--line);cursor:pointer;transition:background .2s}
+.dots .d.active{background:var(--amber)}
+.counter{margin-left:auto;font-size:16px;font-style:italic;color:var(--muted)}
+
+/* deck viewer */
+.deck{border:1px solid var(--line);background:var(--paper);padding:10px;margin-top:30px}
+.deck-main img{width:100%;height:auto;display:block}
+.deck-controls{display:flex;align-items:center;justify-content:center;gap:22px;padding:12px 0 4px}
+.deck-btn{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:transparent;font:inherit;font-size:20px;color:var(--ink);cursor:pointer;transition:border-color .2s}
+.deck-btn:hover{border-color:var(--amber)}
+.deck-counter{font-style:italic;color:var(--muted);min-width:7ch;text-align:center;font-variant-numeric:tabular-nums}
+.deck-thumbs{display:flex;gap:6px;overflow-x:auto;padding:10px 2px 6px;margin-top:6px;border-top:1px solid var(--line)}
+.deck-thumbs img{width:84px;height:auto;flex:none;border:2px solid transparent;opacity:.55;cursor:pointer;transition:all .15s}
+.deck-thumbs img:hover{opacity:.9}
+.deck-thumbs img.active{opacity:1;border-color:var(--amber)}
+
+dialog{border:0;background:transparent;max-width:96vw;max-height:96vh;margin:auto;overflow:visible}
+dialog::backdrop{background:rgba(24,38,28,.84)}
+dialog img{max-width:96vw;max-height:92vh;display:block;background:var(--paper)}
+dialog button{position:absolute;top:-38px;right:0;background:none;border:0;color:#fff;font:inherit;font-size:18px;cursor:pointer}
+
+footer{border-top:1px solid var(--line);padding-top:28px;color:var(--muted)}
+footer .links{display:flex;gap:26px;flex-wrap:wrap;margin-top:6px}
+footer a{color:var(--ink);text-decoration-color:var(--amber);text-underline-offset:3px}
+footer .line1{font-family:var(--display);font-style:italic;font-weight:500;font-size:26px;color:var(--ink);margin-bottom:6px}
+
+@media (max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  aside{position:static;height:auto;border-right:0;border-bottom:1px solid var(--line);padding:110px 28px 36px;overflow:visible}
+  main{padding:56px 28px 100px}
+  .back{left:28px}
+  .stats{grid-template-columns:1fr;gap:22px}
+  .branch{width:110px}
+  .deck-thumbs img{width:64px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+
+<svg class="branch b1" viewBox="0 0 170 300" aria-hidden="true"><path d="M36 0 C40 90 46 180 50 290"/><path d="M42 70 C70 60 90 48 112 42"/><ellipse cx="124" cy="38" rx="13" ry="14"/><path d="M0 120 C20 125 36 140 46 152"/></svg>
+<svg class="branch b2" viewBox="0 0 170 300" aria-hidden="true"><path d="M36 0 C40 90 46 180 50 290"/><path d="M42 70 C70 60 90 48 112 42"/><ellipse cx="124" cy="38" rx="13" ry="14"/></svg>
+
+<a class="back" href="index.html">&larr; Back to projects</a>
+
+<div class="wrap">
+<aside>
+  <div>
+    <h1>Peace Pods</h1>
+    <p class="sub">A wellness space for StartX founders</p>
+  </div>
+  <div class="meta">
+    <div><h3>Challenge</h3><p>Design a wellness space for burnt-out startup founders at StartX in Stanford Research Park, for Design 121.</p></div>
+    <div><h3>Team</h3><p>Audrey, Sophie Cline, Sophia Awuzie (Team Rock, Paper, Scissors)</p></div>
+    <div><h3>My Role</h3><p>Needfinding, concept sketching, prototype testing</p></div>
+    <div><h3>Skills</h3>
+      <ul><li>Needfinding interviews</li><li>Synthesis and point of view</li><li>How might we framing</li><li>Concept sketching</li><li>Prototype testing</li><li>Business case</li><li>Teamwork</li></ul>
+    </div>
+  </div>
+</aside>
+
+<main>
+<section><h2>About Peace Pods</h2><div class="rule"></div><p>Peace Pods are private spaces inside StartX where founders and their team members can step away from the work environment to rest, recharge, and reset. We designed them from needfinding interviews, through prototype trade shows, to a tested and built solution.</p><p>I designed them with Sophie Cline and Sophia Awuzie for Design 121 as team Rock, Paper, Scissors, working with founders at StartX in Stanford Research Park.</p><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-01.jpg" aria-label="Enlarge: Title slide: Peace Pods, team Rock, Paper, Scissors, Stanford Research Park and StartX"><img src="assets/peace-pods/peace-pods-01.jpg" alt="Title slide: Peace Pods, team Rock, Paper, Scissors, Stanford Research Park and StartX" loading="lazy"></button></figure></section>
+
+<section><h2>Needfinding</h2><div class="rule"></div><p>We interviewed founders, mentors, and StartX community members to understand the emotional texture of startup life at Stanford Research Park. Six conversations, one accelerator.</p><div class="persona"><div><b>Jennifer Appel.</b> Founder of 16 Paws Luxury Pet Co., inspired by the joyful life she shares with her four dogs.</div><div><b>Jim Benton.</b> Current founder and lead mentor at StartX, working on his next project, Alignment.io.</div><div><b>Teddy Solomon.</b> Co-founder and CEO of Fizz, a social media platform centered around anonymous college communities.</div><div><b>Char Kwon.</b> Co-founder and CEO of FastrakAI, mentor for other startup founders, and early-stage investor.</div><div><b>Senching.</b> Stanford senior pursuing Mechanical Engineering who has worked at a startup.</div><div><b>Other StartX founders.</b> Founders we interviewed casually on-site at StartX while observing the environment.</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-02.jpg" aria-label="Enlarge: Needfinding slide with the interviewees"><img src="assets/peace-pods/peace-pods-02.jpg" alt="Needfinding slide with the interviewees" loading="lazy"></button></figure></section>
+
+<section><h2>Synthesis</h2><div class="rule"></div><p>Coding the interviews surfaced four tensions. Underneath them was a recurring conflict between a culture that promotes constant, visible hustle and a quieter, universal need to step away from it.</p>
+<h3>A culture of constant work</h3><blockquote class="quote">“The accelerator culture [in SF] promotes this idea of sleeping on a mattress on the floor, working 20-hour days. That's just not exciting to people.”</blockquote><blockquote class="quote">“You don't need to post pictures of yourself on like Twitter, like crushing like a monster at like 2am while you're making all of your employees sleep on mattresses in one room. That's just not the reality of startup culture.”</blockquote>
+<h3>Promotion of discomfort</h3><blockquote class="quote">“When you create space too nice and too comfortable for people in a very difficult challenge, it's sometimes easy to get comfortable — and you can't be comfortable when you're in a zone where you make no money.”</blockquote>
+<h3>Deprioritization of self-care</h3><blockquote class="quote">“I find that a lot of self-care, um, is almost like aftercare for when I'm having a hard time.”</blockquote>
+<h3>The need for alone time</h3><blockquote class="quote">“I wasn't super keen on [startup culture] because... I've seen just like the intensity of that kind of lifestyle.”</blockquote><blockquote class="quote">“My perfect workday starts with coffee in bed and pure creative time — just for me.”</blockquote><blockquote class="quote">“I really, really love journaling. I feel like that is maybe my primary way to process and kind of de-stress.”</blockquote>
+<figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-03.jpg" aria-label="Enlarge: Synthesis slide: acceptance of discomfort, culture of constant work, need for alone time, deprioritization of self-care"><img src="assets/peace-pods/peace-pods-03.jpg" alt="Synthesis slide: acceptance of discomfort, culture of constant work, need for alone time, deprioritization of self-care" loading="lazy"></button></figure></section>
+
+<section><h2>Meet Maya</h2><div class="rule"></div><p>Our target users are young, Gen Z founders. 70% of them say they need to pay closer attention to their mental health (Ogilvy, 2022). Maya is a high-performing young founder working 14-hour days.</p><div class="persona"><div>Needs to unplug and recharge throughout the workday</div><div>Struggles to achieve work/life balance</div><div>Without recovery, her decision-making and creativity suffer</div><div>Feels guilty about taking breaks</div><div>Needs a space that signals rest is a legitimate part of high performance</div><div>Without cultural permission to pause, she risks burnout</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-04.jpg" aria-label="Enlarge: User group and point of view: Maya"><img src="assets/peace-pods/peace-pods-04.jpg" alt="User group and point of view: Maya" loading="lazy"></button></figure></section>
+
+<section><h2>The Problem</h2><div class="rule"></div><p>StartX is full of workspaces, desks, and meeting rooms, but there is no space that invites founders or their team members to rest or take personal time for themselves.</p><blockquote class="quote">“[Startup culture] teaches... that you need to work a certain amount of hours... or your company is gonna fail.”</blockquote><blockquote class="quote">“We used to have a makeshift [nap room]... but now it's a meeting room.”</blockquote><div class="stats" style="grid-template-columns:repeat(2,1fr)"><div class="stat"><b>67%</b><span>of 18 to 34 year-olds said stress makes it hard for them to focus</span></div><div class="stat"><b>58%</b><span>say that most days their stress is “completely overwhelming,” the most of any age group surveyed (APA, 2023)</span></div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-07.jpg" aria-label="Enlarge: Problem framing slide with quotes and stress statistics"><img src="assets/peace-pods/peace-pods-07.jpg" alt="Problem framing slide with quotes and stress statistics" loading="lazy"></button></figure></section>
+
+<section><h2>How Might We</h2><div class="rule"></div><p>We framed the design space with eight questions.</p><div class="persona"><div>How might we turn our workspaces into creative studios, not just places to sit at a desk?</div><div>How might we foster positive group dynamics in a high-pressure environment?</div><div>How might we allow people to share the new tools and resources they've discovered?</div><div>How might we protect quiet, creative time from the chaos of to-do lists?</div><div>How might we encourage flow of new ideas and insights?</div><div>How might we help people do their best thinking without pressure?</div><div>How might we allow mentor and mentee to exchange insights as equals?</div><div>How might we promote a culture of work-life balance in an industry that pushes the opposite?</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-17.jpg" aria-label="Enlarge: How might we statements"><img src="assets/peace-pods/peace-pods-17.jpg" alt="How might we statements" loading="lazy"></button></figure></section>
+
+<section id="brainstorm"><h2>Brainstorm</h2><div class="rule"></div><p>Each teammate independently sketched nine concepts addressing the questions above, for 27 concepts across three sketchbooks. Filter by teammate, or select any card to view the original sketch.</p>
+<div class="filters" role="group" aria-label="Filter concepts by teammate"><button type="button" class="active" data-filter="all">All 27</button><button type="button" data-filter="audrey">Audrey</button><button type="button" data-filter="sophie">Sophie</button><button type="button" data-filter="sophia">Sophia</button></div>
+<div class="concepts" id="concepts"><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-19.jpg" aria-label="View original sketch: Modular Work Pods"><span class="who">Audrey, sketch 01</span><h4>Modular Work Pods</h4><p>Semi-enclosed, flexible stations giving team members control over their workspace while maintaining a sense of shared environment.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-20.jpg" aria-label="View original sketch: Community Pitch Steps"><span class="who">Audrey, sketch 02</span><h4>Community Pitch Steps</h4><p>Tiered, open seating spaces inviting casual pitches, spontaneous brainstorming, and intimate public events.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-21.jpg" aria-label="View original sketch: Startup Showcase Wall"><span class="who">Audrey, sketch 03</span><h4>Startup Showcase Wall</h4><p>A dedicated space for resident startups to display products, milestones, or stories in a visually engaging way.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-22.jpg" aria-label="View original sketch: Dynamic Zoning System"><span class="who">Audrey, sketch 04</span><h4>Dynamic Zoning System</h4><p>Adaptable layouts and visual markers guiding founders between zones for deep work, collaboration, and relaxation.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-23.jpg" aria-label="View original sketch: Founder Wellness Corner"><span class="who">Audrey, sketch 05</span><h4>Founder Wellness Corner</h4><p>A designated area offering a peaceful retreat for emotional support, relaxation, and mental rejuvenation.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-24.jpg" aria-label="View original sketch: Café &amp; Drop-in Mentor Booths"><span class="who">Audrey, sketch 06</span><h4>Café &amp; Drop-in Mentor Booths</h4><p>An informal, welcoming environment where founders can easily access expert mentorship and funding guidance.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-25.jpg" aria-label="View original sketch: Digital Whiteboard Wall"><span class="who">Audrey, sketch 07</span><h4>Digital Whiteboard Wall</h4><p>AR/VR replay lets teams capture and revisit brainstorming sessions in an interactive, immersive way.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-26.jpg" aria-label="View original sketch: Startup Supply Locker + Maker Corner"><span class="who">Audrey, sketch 08</span><h4>Startup Supply Locker + Maker Corner</h4><p>Easy access to essential tools and materials for rapid prototyping and experimentation.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="audrey" data-src="assets/peace-pods/peace-pods-27.jpg" aria-label="View original sketch: Digital Matchmaking Kiosk"><span class="who">Audrey, sketch 09</span><h4>Digital Matchmaking Kiosk</h4><p>Uses algorithms to connect startups with relevant people, resources, and opportunities in real time.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-28.jpg" aria-label="View original sketch: Smart Glass Meeting Rooms"><span class="who">Sophie, sketch 10</span><h4>Smart Glass Meeting Rooms</h4><p>Tintable glass doors transform rooms from fully open to totally private, on demand.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-29.jpg" aria-label="View original sketch: Sponsored Evening Events"><span class="who">Sophie, sketch 11</span><h4>Sponsored Evening Events</h4><p>Fun after-hours excursions to bars and restaurants, promoting healthier work-life balance and group dynamics.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-30.jpg" aria-label="View original sketch: Outdoor Zen Garden Space"><span class="who">Sophie, sketch 12</span><h4>Outdoor Zen Garden Space</h4><p>A water feature and ample seating in a quiet exterior area, perfect for meditation and a break from the office.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-31.jpg" aria-label="View original sketch: Drop-In “Office Hours”"><span class="who">Sophie, sketch 13</span><h4>Drop-In “Office Hours”</h4><p>Mentors, founders, and investors gather for low-stakes coffee chats open to the whole community.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-32.jpg" aria-label="View original sketch: Community Resource Board"><span class="who">Sophie, sketch 14</span><h4>Community Resource Board</h4><p>A tangible, physical way for founders and mentors to share insights and helpful tools.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-33.jpg" aria-label="View original sketch: StartX Team Sports"><span class="who">Sophie, sketch 15</span><h4>StartX Team Sports</h4><p>Low-stakes, friendly competition between startup teams builds community and connection.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-34.jpg" aria-label="View original sketch: Indoor De-Stress Space"><span class="who">Sophie, sketch 16</span><h4>Indoor De-Stress Space</h4><p>Comfy seating, calming scents, meditative music, and stress toys for a quick in-office getaway.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-35.jpg" aria-label="View original sketch: Founders x Stanford Classes"><span class="who">Sophie, sketch 17</span><h4>Founders x Stanford Classes</h4><p>Founders visit classrooms to share knowledge with current Stanford students and gain exposure in return.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophie" data-src="assets/peace-pods/peace-pods-36.jpg" aria-label="View original sketch: Founder’s Corner Online Forum"><span class="who">Sophie, sketch 18</span><h4>Founder’s Corner Online Forum</h4><p>A reddit-style blog and Q&amp;A section connecting founders worldwide with mentors and experienced peers.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-37.jpg" aria-label="View original sketch: Office Stretch Area"><span class="who">Sophia, sketch 19</span><h4>Office Stretch Area</h4><p>A quick body-break space countering the health costs of sitting at a desk all day.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-38.jpg" aria-label="View original sketch: Sun Room Offices"><span class="who">Sophia, sketch 20</span><h4>Sun Room Offices</h4><p>Naturally lit rooms connecting founders to the outside world while they work.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-39.jpg" aria-label="View original sketch: Space Tracker"><span class="who">Sophia, sketch 21</span><h4>Space Tracker</h4><p>Digital, badge-based visibility into where people are in the office, opt-in and anonymized for safety.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-40.jpg" aria-label="View original sketch: Timed Light Bulbs"><span class="who">Sophia, sketch 22</span><h4>Timed Light Bulbs</h4><p>Bulbs that shift color hourly, a uniform, non-distracting way to keep track of time.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-41.jpg" aria-label="View original sketch: Food Corner"><span class="who">Sophia, sketch 23</span><h4>Food Corner</h4><p>An everyday potluck with home-cooked dishes shared lazy-Susan style, not just catering.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-42.jpg" aria-label="View original sketch: Foot Players"><span class="who">Sophia, sketch 24</span><h4>Foot Players</h4><p>Under-desk foot-pedal machines giving founders a way to move while they work.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-43.jpg" aria-label="View original sketch: Wellness Pods"><span class="who">Sophia, sketch 25</span><h4>Wellness Pods</h4><p>A pocket away from the hustle and bustle, inspiring creativity through relaxation.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-44.jpg" aria-label="View original sketch: Open Gardening"><span class="who">Sophia, sketch 26</span><h4>Open Gardening</h4><p>A shared garden where founders reconnect with nature as their business grows.</p><span class="view">View original sketch</span></button><button type="button" class="concept" data-who="sophia" data-src="assets/peace-pods/peace-pods-45.jpg" aria-label="View original sketch: Work Bus"><span class="who">Sophia, sketch 27</span><h4>Work Bus</h4><p>A shuttle that builds community and helps the environment on the commute to StartX.</p><span class="view">View original sketch</span></button></div></section>
+
+<section><h2>Trade Show</h2><div class="rule"></div><p>From 27 concepts, we converged on three refined prototypes and tested them at a prototype trade show with founders and StartX staff.</p>
+<h3>The Here and Now Kiosk</h3><p>A live, interactive display for spontaneous connection across Stanford Research Park. Tap any building to see who is inside and which events are open to drop-ins.</p><p class="fb">Feedback was that it felt exciting and novel, but people had privacy concerns around shared location data.</p><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-47.jpg" aria-label="Enlarge: Here and Now Kiosk prototype"><img src="assets/peace-pods/peace-pods-47.jpg" alt="Here and Now Kiosk prototype" loading="lazy"></button></figure>
+<h3>Startup Showcase Wall</h3><p>A large, live, interactive display surfacing founder, product, and mentor updates, so staying current does not cost anyone independent research time.</p><p class="fb">Feedback was that people loved the convenience, but questioned multi-user access and long-term novelty.</p><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-48.jpg" aria-label="Enlarge: Startup Showcase Wall prototype"><img src="assets/peace-pods/peace-pods-48.jpg" alt="Startup Showcase Wall prototype" loading="lazy"></button></figure>
+<h3>Wellness Pods</h3><p>Private pods lowering the barrier to relaxation during the work day, for a nap, a journal, a stretch, or a moment of quiet before returning to work.</p><p class="fb">Feedback was that it was the most requested by founders and staff alike, though some doubted founders would “allow themselves” to use it.</p><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-49.jpg" aria-label="Enlarge: Wellness Pods prototype"><img src="assets/peace-pods/peace-pods-49.jpg" alt="Wellness Pods prototype" loading="lazy"></button></figure></section>
+
+<section><h2>Doubling Down on Wellness Pods</h2><div class="rule"></div><p>The Wellness Pod prototype pulled the most positive feedback and the most engagement time at the trade show, so we refined our point of view and tested again with aspiring Gen Z founders.</p>
+<h3>Meet Phil</h3><p>Phil is a founder who feels guilty for resting.</p><div class="persona"><div>Works 14-hour days and feels constant pressure to stay “on”</div><div>Needs to unplug through brief moments of physical and mental wellness</div><div>Struggles to set boundaries between work and rest</div><div>Fears breaks will be perceived as weakness or lost productivity</div><div>Needs a space that signals rest is a legitimate part of high performance</div></div>
+<h3>Learnings from testing</h3><div class="persona"><div><b>Recharge, not retreat.</b> Given StartX's focus on collaboration, this is not a solo work space to sequester in. It is for founders who need to recharge for short periods when their social battery is drained.</div><div><b>Comfortable, not too comfortable.</b> The room should draw people in and be a positive addition to the space, but people need a reason to leave, with no devices inside, so the office stays social and collaborative.</div><div><b>Privacy over efficiency.</b> Testers by and large valued the privacy of individual pods over the efficiency of multiple people sharing one space with flexible dividers.</div><div><b>Unexpected use cases.</b> Testers surfaced uses we had not considered, like breastfeeding mothers needing to pump, or anyone needing privacy for prayer throughout the day.</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-63.jpg" aria-label="Enlarge: Learnings from testing slide"><img src="assets/peace-pods/peace-pods-63.jpg" alt="Learnings from testing slide" loading="lazy"></button></figure></section>
+
+<section><h2>The Final Solution</h2><div class="rule"></div><p>Peace Pods are a private space that allows founders and their team members to relax, recharge, and step away from the traditional work environment. They are the perfect place to nap, journal, doodle, meditate, stretch, or daydream.</p><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-08.jpg" aria-label="Enlarge: Peace Pods before and after design"><img src="assets/peace-pods/peace-pods-08.jpg" alt="Peace Pods before and after design" loading="lazy"></button></figure>
+<p style="margin-top:1.2em">Each pod comes with</p><div class="persona"><div>Alexa, warm lighting, art, and plants</div><div>Doodle supplies</div><div>Journals and self-care prompts</div><div>A wide selection of books</div><div>Stretch, breath, and rolling exercises, plus a foam roller</div><div>Quick snacks for a pick-me-up</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-09.jpg" aria-label="Enlarge: Peace Pod interior with amenities"><img src="assets/peace-pods/peace-pods-09.jpg" alt="Peace Pod interior with amenities" loading="lazy"></button></figure></section>
+
+<section><h2>How a Break Works</h2><div class="rule"></div><p>A 15-minute walkthrough of what changes for a founder, from a stressed desk moment to a measurable drop in stress.</p>
+<div class="player" id="player">
+  <div class="stage">
+<div class="scene active" id="scene0">
+          <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bg0" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#1B2432"/>
+                <stop offset="100%" stop-color="#0F151E"/>
+              </linearGradient>
+              <radialGradient id="lamp0" cx="50%" cy="30%" r="60%">
+                <stop offset="0%" stop-color="#3A4B63" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#0F151E" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="blur0"><feGaussianBlur stdDeviation="10"/></filter>
+            </defs>
+            <rect width="760" height="340" fill="url(#bg0)"/>
+            <ellipse cx="380" cy="90" rx="260" ry="140" fill="url(#lamp0)"/>
+            <rect x="150" y="236" width="460" height="14" rx="6" fill="#2A3547"/>
+            <rect x="150" y="236" width="460" height="4" rx="2" fill="#3E4E66"/>
+            <g filter="url(#blur0)" opacity="0.5"><ellipse cx="380" cy="190" rx="60" ry="16" fill="#000"/></g>
+            <g>
+              <ellipse cx="380" cy="196" rx="38" ry="40" fill="#E0574B"/>
+              <path d="M350 178 q30 -22 60 0" stroke="#8C2A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <circle cx="366" cy="192" r="3.4" fill="#3A130E"/>
+              <circle cx="394" cy="192" r="3.4" fill="#3A130E"/>
+              <path d="M368 210 q12 -6 24 0" stroke="#3A130E" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="352" y="228" width="56" height="42" rx="12" fill="#E0574B"/>
+            </g>
+            <g opacity="0.75">
+              <circle cx="250" cy="204" r="26" fill="#3A4B63"/>
+              <rect x="228" y="228" width="44" height="34" rx="10" fill="#3A4B63"/>
+            </g>
+            <g opacity="0.75">
+              <circle cx="510" cy="204" r="26" fill="#3A4B63"/>
+              <rect x="488" y="228" width="44" height="34" rx="10" fill="#3A4B63"/>
+            </g>
+            <g>
+              <circle cx="612" cy="94" r="28" fill="#F6B26B" opacity="0.9"/>
+              <text x="612" y="99" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="13" fill="#3A2107">21:47</text>
+            </g>
+          </svg>
+        </div>
+<div class="scene" id="scene1">
+          <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#171F2A"/>
+                <stop offset="60%" stop-color="#22303A"/>
+                <stop offset="100%" stop-color="#4B3A24"/>
+              </linearGradient>
+              <radialGradient id="glow1" cx="50%" cy="50%" r="55%">
+                <stop offset="0%" stop-color="#F6B26B" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#F6B26B" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="blur1"><feGaussianBlur stdDeviation="18"/></filter>
+            </defs>
+            <rect width="760" height="340" fill="url(#bg1)"/>
+            <g filter="url(#blur1)"><ellipse cx="600" cy="160" rx="180" ry="180" fill="url(#glow1)"/></g>
+            <rect x="510" y="60" width="180" height="220" rx="22" fill="#2F6B47" opacity="0.9"/>
+            <rect x="540" y="120" width="120" height="120" rx="14" fill="#FDF3E4"/>
+            <text x="600" y="46" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-weight="600" font-size="16" fill="#FDF3E4">Peace Pod</text>
+            <g>
+              <ellipse cx="280" cy="216" rx="34" ry="36" fill="#E0574B"/>
+              <path d="M252 200 q28 -20 56 0" stroke="#8C2A20" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <rect x="254" y="246" width="52" height="38" rx="11" fill="#E0574B"/>
+            </g>
+            <path d="M330 230 C 400 220, 440 220, 500 200" stroke="#F6B26B" stroke-width="2" stroke-dasharray="6 8" fill="none"/>
+            <path d="M492 196 l14 6 l-8 12" stroke="#F6B26B" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+<div class="scene" id="scene2">
+          <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bg2" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F6D9A8"/>
+                <stop offset="100%" stop-color="#EDBE86"/>
+              </linearGradient>
+              <radialGradient id="lampGlow2" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stop-color="#FFF3D6" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#FFF3D6" stop-opacity="0"/>
+              </radialGradient>
+              <filter id="soft2"><feGaussianBlur stdDeviation="14"/></filter>
+            </defs>
+            <rect width="760" height="340" fill="url(#bg2)"/>
+            <rect x="0" y="250" width="760" height="90" fill="#C98A55" opacity="0.35"/>
+            <g filter="url(#soft2)"><circle cx="180" cy="90" r="70" fill="url(#lampGlow2)"/></g>
+            <circle cx="180" cy="94" r="10" fill="#FFE9BC"/>
+            <rect x="174" y="60" width="12" height="30" fill="#8C6239" rx="4"/>
+            <g opacity="0.9">
+              <ellipse cx="560" cy="70" rx="26" ry="30" fill="#4E8461"/>
+              <ellipse cx="586" cy="86" rx="22" ry="26" fill="#5C9A6F"/>
+              <ellipse cx="538" cy="90" rx="20" ry="24" fill="#3E6E4F"/>
+              <rect x="548" y="108" width="24" height="30" fill="#B97F52" rx="6"/>
+            </g>
+            <rect x="240" y="230" width="300" height="16" rx="8" fill="#B97F52"/>
+            <rect x="255" y="180" width="60" height="60" rx="10" fill="#F2924A" opacity="0.85"/>
+            <rect x="255" y="180" width="60" height="8" rx="4" fill="#FCEBDA"/>
+            <g>
+              <ellipse cx="420" cy="196" rx="36" ry="38" fill="#F2924A"/>
+              <path d="M394 182 q26 -18 52 0" stroke="#8A4413" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M406 194 q6 -6 10 0" stroke="#5C2809" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M434 194 q6 -6 10 0" stroke="#5C2809" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M408 210 q12 8 24 0" stroke="#5C2809" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="392" y="228" width="56" height="70" rx="18" fill="#F2924A"/>
+              <rect x="392" y="252" width="56" height="46" rx="14" fill="#D9793A" opacity="0.7"/>
+            </g>
+            <rect x="470" y="250" width="46" height="34" rx="4" fill="#FDF3E4" stroke="#C98A55" stroke-width="2"/>
+            <line x1="478" y1="260" x2="508" y2="260" stroke="#C98A55" stroke-width="2"/>
+            <line x1="478" y1="268" x2="508" y2="268" stroke="#C98A55" stroke-width="2"/>
+            <line x1="478" y1="276" x2="498" y2="276" stroke="#C98A55" stroke-width="2"/>
+            <g opacity="0.85">
+              <circle cx="140" cy="150" r="3" fill="#FFE9BC"/><circle cx="160" cy="130" r="3" fill="#FFE9BC"/>
+              <circle cx="120" cy="120" r="3" fill="#FFE9BC"/><circle cx="620" cy="150" r="3" fill="#FFE9BC"/>
+              <circle cx="650" cy="180" r="3" fill="#FFE9BC"/>
+            </g>
+          </svg>
+        </div>
+<div class="scene" id="scene3">
+          <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bg3" cx="50%" cy="50%" r="75%">
+                <stop offset="0%" stop-color="#2F6B47"/>
+                <stop offset="100%" stop-color="#173A26"/>
+              </radialGradient>
+              <filter id="ringGlow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+            </defs>
+            <rect width="760" height="340" fill="url(#bg3)"/>
+            <circle cx="380" cy="170" r="88" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="10"/>
+            <circle id="ring" cx="380" cy="170" r="88" fill="none" stroke="#8FE3B4" stroke-width="10" stroke-linecap="round"
+              stroke-dasharray="553" stroke-dashoffset="415" transform="rotate(-90 380 170)" filter="url(#ringGlow)"/>
+            <text x="380" y="164" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="30" fill="#F3EEE1">15:00</text>
+            <text x="380" y="188" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="12" letter-spacing="1" fill="#8FE3B4">COUNTDOWN</text>
+          </svg>
+        </div>
+<div class="scene" id="scene4">
+          <svg viewBox="0 0 760 340" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="bg4" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FCE3B0"/>
+                <stop offset="100%" stop-color="#F6C88A"/>
+              </linearGradient>
+              <radialGradient id="sun4" cx="50%" cy="20%" r="60%">
+                <stop offset="0%" stop-color="#FFF6E0" stop-opacity="0.8"/>
+                <stop offset="100%" stop-color="#FFF6E0" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <rect width="760" height="340" fill="url(#bg4)"/>
+            <ellipse cx="380" cy="70" rx="260" ry="140" fill="url(#sun4)"/>
+            <rect x="150" y="236" width="460" height="14" rx="6" fill="#C98A55"/>
+            <g>
+              <ellipse cx="380" cy="196" rx="38" ry="40" fill="#2F6B47"/>
+              <path d="M350 178 q30 -14 60 0" stroke="#173A26" stroke-width="4" fill="none" stroke-linecap="round"/>
+              <path d="M364 194 q6 8 10 0" stroke="#0F241A" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M392 194 q6 8 10 0" stroke="#0F241A" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M368 210 q12 10 24 0" stroke="#0F241A" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <rect x="352" y="228" width="56" height="42" rx="12" fill="#2F6B47"/>
+            </g>
+            <g>
+              <circle cx="250" cy="204" r="26" fill="#4E8461"/>
+              <rect x="228" y="228" width="44" height="34" rx="10" fill="#4E8461"/>
+            </g>
+            <g>
+              <circle cx="510" cy="204" r="26" fill="#4E8461"/>
+              <rect x="488" y="228" width="44" height="34" rx="10" fill="#4E8461"/>
+            </g>
+            <g>
+              <rect x="330" y="60" width="100" height="34" rx="17" fill="#173A26"/>
+              <text x="380" y="82" text-anchor="middle" font-family="EB Garamond, Georgia, serif" font-size="13" fill="#8FE3B4">2.4 → 4.2</text>
+            </g>
+          </svg>
+        </div>
+  </div>
+  <div class="pcap"><div class="caption" id="caption"></div><div class="subcaption" id="subcaption"></div></div>
+  <div class="stress"><span>Stress level</span><div class="track"><div class="fill" id="stressFill"></div></div><span class="val" id="stressVal">88%</span></div>
+  <div class="controls">
+    <button type="button" class="play-btn" id="playBtn" aria-label="Pause"><svg id="playIcon" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
+    <div class="dots" id="dots"></div>
+    <span class="counter" id="counter">Scene 1 of 5</span>
+  </div>
+</div></section>
+
+<section><h2>Measured Impact</h2><div class="rule"></div><div class="stats"><div class="stat"><b>2.4 to 4.2</b><span>average self-reported wellness score, before and after</span></div><div class="stat"><b>3.8</b><span>average satisfaction score using the Peace Pod prototype</span></div><div class="stat"><b>27 to 3</b><span>concepts narrowed to 3 tested prototypes, then to 1 built solution</span></div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-10.jpg" aria-label="Enlarge: Design result slide with wellness and satisfaction scores"><img src="assets/peace-pods/peace-pods-10.jpg" alt="Design result slide with wellness and satisfaction scores" loading="lazy"></button></figure></section>
+
+<section><h2>Why StartX Should Build This</h2><div class="rule"></div><div class="persona"><div>Will draw in up-and-coming Gen Z founders</div><div>Provides a unique value proposition by showing StartX really cares about founder wellbeing</div><div>Increases founder productivity and success</div><div>Fairly low upstart costs to include in new space</div><div>Must be inviting and well advertised</div></div><figure class="slide"><button type="button" data-src="assets/peace-pods/peace-pods-11.jpg" aria-label="Enlarge: Business model and design implications slide"><img src="assets/peace-pods/peace-pods-11.jpg" alt="Business model and design implications slide" loading="lazy"></button></figure></section>
+
+<section id="deck"><h2>The Complete Deck</h2><div class="rule"></div><p>Browse the full 64-slide presentation below, or select the main slide to enlarge it.</p>
+<div class="deck">
+  <div class="deck-main"><img id="deck-img" alt="Presentation slide" style="cursor:zoom-in"></div>
+  <div class="deck-controls"><button type="button" class="deck-btn" id="deck-prev" aria-label="Previous slide">&larr;</button><span class="deck-counter"><span id="deck-count">01</span> / 64</span><button type="button" class="deck-btn" id="deck-next" aria-label="Next slide">&rarr;</button></div>
+  <div class="deck-thumbs" id="deck-thumbs"></div>
+</div></section>
+
+<footer>
+  <div class="line1">Let's design the next space.</div>
+  <div class="links"><a href="tel:9179026926">(917) 902-6926</a><a href="mailto:achoi27@stanford.edu">achoi27@stanford.edu</a><a href="https://www.linkedin.com/in/audreyjinyoungchoi/" target="_blank" rel="noopener">LinkedIn</a></div>
+  <p style="margin-top:18px;font-style:italic">Audrey Choi, Sophie Cline, Sophia Awuzie. Design 121, 2026.</p>
+</footer>
+</main>
+</div>
+
+<dialog id="lb"><button type="button" id="lbx">Close</button><img alt=""></dialog>
+<script>
+(function(){
+  var SLIDES=[];
+  for(var n=1;n<=64;n++) SLIDES.push('assets/peace-pods/peace-pods-'+(n<10?'0':'')+n+'.jpg');
+
+  // lightbox
+  var d=document.getElementById('lb'),li=d.querySelector('img');
+  function openLb(src,alt){li.src=src;li.alt=alt||'';d.showModal();}
+  document.querySelectorAll('.slide button').forEach(function(b){
+    b.addEventListener('click',function(){openLb(b.dataset.src,b.querySelector('img').alt);});
+  });
+  document.getElementById('lbx').addEventListener('click',function(){d.close();});
+  d.addEventListener('click',function(e){if(e.target===d||e.target===li)d.close();});
+
+  // concept filters and sketches
+  var concepts=document.querySelectorAll('.concept');
+  concepts.forEach(function(c){c.addEventListener('click',function(){openLb(c.dataset.src,c.querySelector('h4').textContent);});});
+  document.querySelectorAll('.filters button').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      document.querySelectorAll('.filters button').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      var f=btn.dataset.filter;
+      concepts.forEach(function(c){c.hidden=(f!=='all'&&c.dataset.who!==f);});
+    });
+  });
+
+  // deck viewer
+  var deckImg=document.getElementById('deck-img'),deckCount=document.getElementById('deck-count'),thumbs=document.getElementById('deck-thumbs'),idx=0;
+  SLIDES.forEach(function(src,i){
+    var t=document.createElement('img');t.src=src;t.alt='Slide '+(i+1);t.loading='lazy';
+    t.addEventListener('click',function(){show(i);});
+    thumbs.appendChild(t);
+  });
+  function show(i){
+    idx=(i+SLIDES.length)%SLIDES.length;
+    deckImg.src=SLIDES[idx];deckImg.alt='Slide '+(idx+1)+' of 64';
+    deckCount.textContent=(idx<9?'0':'')+(idx+1);
+    thumbs.querySelectorAll('img').forEach(function(t,k){t.classList.toggle('active',k===idx);});
+    var a=thumbs.children[idx];
+    if(a&&a.scrollIntoView)thumbs.scrollLeft=a.offsetLeft-thumbs.clientWidth/2+a.clientWidth/2;
+  }
+  document.getElementById('deck-prev').addEventListener('click',function(){show(idx-1);});
+  document.getElementById('deck-next').addEventListener('click',function(){show(idx+1);});
+  deckImg.addEventListener('click',function(){openLb(SLIDES[idx],deckImg.alt);});
+  show(0);
+
+  // break simulation
+  (function(){
+    var scenes=[0,1,2,3,4].map(function(i){return document.getElementById('scene'+i);});
+    var dotsWrap=document.getElementById('dots'),counter=document.getElementById('counter');
+    var playBtn=document.getElementById('playBtn'),playIcon=document.getElementById('playIcon'),ring=document.getElementById('ring');
+    var caption=document.getElementById('caption'),subcaption=document.getElementById('subcaption');
+    var stressFill=document.getElementById('stressFill'),stressVal=document.getElementById('stressVal');
+    if(!scenes[0])return;
+    var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var data=[
+      {stress:88,color:'#c0504d',cap:'Heads-down at StartX.',sub:'14-hour days, nowhere to reset.'},
+      {stress:80,color:'#d9a441',cap:'A quiet pod, one knock away.',sub:'Warm light signals somewhere to go.'},
+      {stress:50,color:'#d9a441',cap:'Journal, stretch, or nap.',sub:'Plants, soft light, a blanket, and no screens.'},
+      {stress:32,color:'#2f6b47',cap:'A protected 15-minute break.',sub:'Short enough to stay part of the culture.'},
+      {stress:16,color:'#2f6b47',cap:'Back to work, recharged.',sub:'Average wellness score rose from 2.4 to 4.2.'}
+    ];
+    var pIdx=0,playing=!reduce,timer=null;
+    scenes.forEach(function(s,i){
+      var dot=document.createElement('div');dot.className='d'+(i===0?' active':'');
+      dot.addEventListener('click',function(){goTo(i);reset();});
+      dotsWrap.appendChild(dot);
+    });
+    function render(){
+      scenes.forEach(function(s,i){s.classList.toggle('active',i===pIdx);});
+      Array.prototype.forEach.call(dotsWrap.children,function(dd,i){dd.classList.toggle('active',i===pIdx);});
+      counter.textContent='Scene '+(pIdx+1)+' of 5';
+      caption.textContent=data[pIdx].cap;subcaption.textContent=data[pIdx].sub;
+      stressFill.style.width=data[pIdx].stress+'%';stressFill.style.background=data[pIdx].color;
+      stressVal.textContent=data[pIdx].stress+'%';
+      if(pIdx===3&&ring){
+        ring.style.transition='none';ring.setAttribute('stroke-dashoffset','553');
+        requestAnimationFrame(function(){ring.style.transition='stroke-dashoffset 3.4s linear';ring.setAttribute('stroke-dashoffset','90');});
+      }
+    }
+    function goTo(i){pIdx=(i+scenes.length)%scenes.length;render();}
+    function reset(){clearInterval(timer);if(playing)timer=setInterval(function(){goTo(pIdx+1);},3800);}
+    function syncIcon(){
+      playIcon.innerHTML=playing?'<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>':'<path d="M7 5 L19 12 L7 19 Z"/>';
+      playBtn.setAttribute('aria-label',playing?'Pause':'Play');
+    }
+    playBtn.addEventListener('click',function(){playing=!playing;syncIcon();reset();});
+    syncIcon();render();reset();
+  })();
+})();
+</script>
+</body>
+</html>
