@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sun Pharma AI Agent · Case Study by Audrey Choi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ece4d8;
+    --paper-raised:#f4eee3;
+    --rule:#d6cab8;
+    --rule-dark:#bfb29e;
+    --ink:#1c2040;
+    --ink-soft:#454a68;
+    --accent:#b05b0d;
+    --accent-soft:#f0c08a;
+    --accent-wash:rgba(197,106,21,0.10);
+    --display:'Cormorant Garamond', Georgia, serif;
+    --body:'EB Garamond', Georgia, serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:var(--body); font-size:18px; line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--accent-soft); color:var(--ink);}
+  a{color:var(--accent); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  img{max-width:100%; display:block;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--accent); outline-offset:3px;}
+
+  /* quiet background marks */
+  .deco{position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;}
+  .deco .l1{position:absolute; left:6px; top:-20px; width:1px; height:420px; background:var(--rule-dark); transform:rotate(-2.5deg); opacity:.6;}
+  .deco .l2{position:absolute; right:14px; bottom:60px; width:1px; height:340px; background:var(--rule-dark); transform:rotate(2deg); opacity:.6;}
+  .deco .l3{position:absolute; right:14px; bottom:60px; width:150px; height:1px; background:var(--rule-dark); transform:rotate(-14deg); transform-origin:right center; opacity:.6;}
+  .deco .dot{position:absolute; right:26px; bottom:34px; width:34px; height:34px; border-radius:50%; background:var(--accent-soft); opacity:.55;}
+
+  /* ---------- LAYOUT ---------- */
+  .layout{position:relative; z-index:1; display:grid; grid-template-columns:minmax(300px,33%) 1fr; min-height:100vh;}
+
+  aside.sidebar{
+    position:sticky; top:0; height:100vh; overflow-y:auto;
+    border-right:1px solid var(--rule-dark);
+    padding:14px 44px 56px 12px;
+  }
+  .back{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:var(--display); font-size:1.2rem; font-weight:500; color:var(--ink);
+    border:1px solid var(--rule-dark); border-radius:999px; padding:9px 28px;
+    background:rgba(244,238,227,0.55); text-decoration:none;
+  }
+  .back:hover{text-decoration:none; border-color:var(--accent); color:var(--accent);}
+  .sidebar-body{padding:30px 0 0 32px;}
+  h1.title{
+    font-family:var(--display); font-weight:500; letter-spacing:-0.01em;
+    font-size:clamp(3rem,4.8vw,4.4rem); line-height:1.02; margin:0 0 20px;
+  }
+  .tagline{font-family:var(--display); font-style:italic; font-size:1.7rem; line-height:1.25; color:var(--accent); margin:0;}
+  .side-block{margin-top:clamp(40px,7vh,84px);}
+  .side-block h3{font-family:var(--display); font-weight:600; font-size:1.5rem; margin:0 0 10px; line-height:1.2;}
+  .side-block p{margin:0; font-size:1.12rem; line-height:1.6; color:var(--ink-soft); max-width:26rem;}
+  .skills{list-style:none; margin:0; padding:0;}
+  .skills li{position:relative; padding-left:26px; font-size:1.12rem; line-height:1.45; margin-bottom:9px; color:var(--ink-soft);}
+  .skills li::before{content:''; position:absolute; left:3px; top:0.62em; width:6px; height:6px; border-radius:50%; background:var(--accent);}
+
+  main{padding:84px clamp(32px,6vw,104px) 40px clamp(32px,6vw,96px); min-width:0;}
+  main section{margin-bottom:128px;}
+  h2{
+    font-family:var(--display); font-weight:500; letter-spacing:-0.005em;
+    font-size:clamp(2.4rem,3.6vw,3.3rem); line-height:1.1; margin:0 0 44px;
+  }
+  h2::after{content:''; display:block; width:90px; height:2px; background:var(--accent); margin-top:20px;}
+  main p{font-size:1.28rem; line-height:1.8; color:var(--ink-soft); max-width:46rem; margin:0 0 22px;}
+
+  .frame{border:1px solid var(--rule-dark); background:var(--paper-raised); padding:14px; margin:44px 0 0;}
+  .frame-caption{font-size:1rem; font-style:italic; color:var(--ink-soft); margin:14px 2px 0; max-width:none;}
+
+  /* client lockup inside the hero frame */
+  .lockup{
+    background:#fff; display:flex; align-items:center; justify-content:center; gap:28px; flex-wrap:wrap;
+    padding:56px 32px; text-align:left;
+  }
+  .lockup img{height:72px; width:auto;}
+  .lockup .rule{width:1px; height:56px; background:var(--rule);}
+  .lockup .txt{font-size:1.1rem; line-height:1.5; color:var(--ink-soft); max-width:22rem;}
+  .lockup .txt b{display:block; font-family:var(--display); font-size:1.45rem; font-weight:600; color:var(--ink); line-height:1.2; margin-bottom:2px;}
+
+  /* ---------- VIDEO ---------- */
+  .video-frame{background:#000;}
+  .video-frame video{width:100%; display:block; background:#000;}
+  .video-caption{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin:14px 2px 0;}
+  .video-caption span{font-size:1rem; font-style:italic; color:var(--ink-soft);}
+  .pill{
+    display:inline-block; font-style:italic; font-size:0.98rem; color:var(--accent);
+    border:1px solid var(--accent-soft); background:var(--accent-wash); padding:2px 14px; border-radius:999px;
+  }
+  .video-caption .pill{font-style:italic; color:var(--accent);}
+  .chapters{display:flex; gap:10px; flex-wrap:wrap; margin-top:22px;}
+  .chapter-btn{
+    display:flex; align-items:baseline; gap:8px; cursor:pointer;
+    font-family:var(--display); font-weight:600; font-size:1.1rem; color:var(--ink);
+    background:rgba(244,238,227,0.6); border:1px solid var(--rule-dark); border-radius:999px; padding:6px 18px;
+    transition:all .18s;
+  }
+  .chapter-btn .t{font-family:var(--body); font-weight:500; font-size:0.9rem; color:var(--ink-soft);}
+  .chapter-btn:hover{border-color:var(--accent); color:var(--accent);}
+  .chapter-btn.active{background:var(--accent); border-color:var(--accent); color:var(--paper-raised);}
+  .chapter-btn.active .t{color:var(--accent-soft);}
+
+  /* ---------- DECK ---------- */
+  .stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:28px; margin:0 0 34px;}
+  .stat{border-top:2px solid var(--accent); padding-top:14px;}
+  .stat .n{font-family:var(--display); font-weight:500; font-size:3rem; line-height:1; color:var(--ink); display:block;}
+  .stat .l{font-size:1.05rem; color:var(--ink-soft); margin-top:6px; display:block; line-height:1.35;}
+  .deck-meta{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:30px;}
+
+  .filter-row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:28px;}
+  .filter-chip{
+    display:flex; align-items:center; gap:8px; cursor:pointer;
+    font-family:var(--display); font-weight:600; font-size:1.1rem; color:var(--ink);
+    background:rgba(244,238,227,0.6); border:1px solid var(--rule-dark); border-radius:999px; padding:6px 18px;
+    transition:all .18s;
+  }
+  .filter-chip .dot{width:7px; height:7px; border-radius:50%; background:var(--rule-dark);}
+  .filter-chip:hover{border-color:var(--accent); color:var(--accent);}
+  .filter-chip.active{background:var(--accent); border-color:var(--accent); color:var(--paper-raised);}
+  .filter-chip.active .dot{background:var(--paper-raised);}
+
+  .slide-grid{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  .slide-card{
+    position:relative; cursor:zoom-in; overflow:hidden;
+    background:var(--paper-raised); border:1px solid var(--rule-dark); padding:6px;
+    transition:border-color .18s;
+  }
+  .slide-card:hover{border-color:var(--accent);}
+  .slide-card.hidden{display:none;}
+  .slide-card.divider{grid-column:1 / -1;}
+  .slide-card img{width:100%; display:block; aspect-ratio:16/9; object-fit:cover;}
+  .slide-card.divider img{aspect-ratio:32/9;}
+  .slide-card .num{
+    position:absolute; bottom:14px; right:14px; z-index:2;
+    background:rgba(28,32,64,0.85); color:var(--paper-raised);
+    font-family:var(--display); font-weight:600; font-size:0.95rem; padding:1px 12px; border-radius:999px;
+  }
+
+  /* ---------- REFLECTION ---------- */
+  .cols-2{display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:40px;}
+  .col{border-top:2px solid var(--accent); padding-top:18px;}
+  .col h3{font-family:var(--display); font-weight:600; font-size:1.55rem; line-height:1.2; margin:0 0 10px;}
+  .col p{font-size:1.1rem; line-height:1.7; margin:0;}
+
+  /* ---------- CLOSING ---------- */
+  .closing{border-top:1px solid var(--rule-dark); padding-top:56px; margin-bottom:40px;}
+  .btn{
+    display:inline-block; font-family:var(--display); font-weight:600; font-size:1.2rem; padding:11px 30px; border-radius:999px;
+    border:1px solid var(--rule-dark); color:var(--ink); text-decoration:none; transition:all .2s;
+  }
+  .btn:hover{text-decoration:none; border-color:var(--accent); color:var(--accent);}
+  footer{
+    margin-top:40px; padding:28px 0 8px; border-top:1px solid var(--rule-dark);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px; color:var(--ink-soft);
+  }
+  footer p{margin:0; font-size:1rem; max-width:none;}
+
+  /* ---------- LIGHTBOX ---------- */
+  .lightbox{
+    position:fixed; inset:0; background:rgba(28,32,64,0.94); z-index:100;
+    display:none; align-items:center; justify-content:center; padding:40px;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img#lb-img{max-width:min(1200px,92vw); max-height:78vh; box-shadow:0 30px 80px rgba(0,0,0,0.5);}
+  .lb-close{
+    position:absolute; top:24px; right:28px; color:var(--paper-raised);
+    font-family:var(--display); font-weight:600; font-size:1.15rem;
+    background:rgba(244,238,227,0.1); border:1px solid rgba(244,238,227,0.35);
+    padding:7px 22px; border-radius:999px; cursor:pointer;
+  }
+  .lb-nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    background:rgba(244,238,227,0.1); border:1px solid rgba(244,238,227,0.35);
+    color:var(--paper-raised); width:46px; height:46px; border-radius:50%; cursor:pointer;
+    font-size:22px; display:flex; align-items:center; justify-content:center;
+  }
+  .lb-prev{left:24px;} .lb-next{right:24px;}
+  .lb-count{
+    position:absolute; bottom:22px; left:50%; transform:translateX(-50%);
+    color:var(--accent-soft); font-family:var(--display); font-size:1.1rem; font-weight:600;
+  }
+  .lb-strip{
+    position:absolute; bottom:60px; left:50%; transform:translateX(-50%);
+    display:flex; gap:6px; max-width:80vw; overflow-x:auto; padding:4px; scrollbar-width:none;
+  }
+  .lb-strip::-webkit-scrollbar{display:none;}
+  .lb-thumb{
+    width:52px; height:30px; object-fit:cover; cursor:pointer; opacity:.45;
+    border:2px solid transparent; transition:all .15s; flex-shrink:0;
+  }
+  .lb-thumb:hover{opacity:.8;}
+  .lb-thumb.active{opacity:1; border-color:var(--accent-soft);}
+
+  /* ---------- RESPONSIVE ---------- */
+  @media (max-width:980px){
+    .layout{grid-template-columns:1fr;}
+    aside.sidebar{position:relative; height:auto; overflow:visible; border-right:none; border-bottom:1px solid var(--rule-dark); padding:14px 24px 44px;}
+    .sidebar-body{padding-left:8px;}
+    .side-block{margin-top:34px;}
+    main{padding:56px 24px 32px;}
+    main section{margin-bottom:96px;}
+  }
+  @media (max-width:760px){
+    .slide-grid{grid-template-columns:1fr;}
+    .frame{padding:8px;}
+    .lockup{padding:36px 20px;}
+    .lockup .rule{display:none;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important; scroll-behavior:auto !important;}
+  }
+</style>
+
+<style id="hero-css">
+main{padding-top:112px !important}
+aside,.side{padding-top:104px !important;gap:20px !important}
+.meta{gap:16px !important;padding-top:8px !important;padding-bottom:0 !important;justify-content:flex-start !important}
+.meta li{line-height:1.5 !important}
+.meta h3{margin-bottom:2px !important}
+.hero{--dur:6.5s;position:relative;z-index:1;width:100%;aspect-ratio:16/9;margin:0 0 72px;background:#111;overflow:hidden;color:#fff}
+.hero-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s .9s}
+.hero-slide.on{opacity:1;visibility:visible;transition:opacity .9s ease}
+.hero-slide .bg{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(34px) brightness(.55) saturate(1.1)}
+.hero-slide .fg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;cursor:zoom-in;transform-origin:50% 50%}
+.hero-slide.on .fg{animation:hero-kb calc(var(--dur) + 1.5s) ease-out forwards}
+.hero-slide.alt.on .fg{animation-name:hero-kb2}
+@keyframes hero-kb{from{transform:scale(1)}to{transform:scale(1.06) translate(-.8%,-.4%)}}
+@keyframes hero-kb2{from{transform:scale(1.06) translate(.8%,.4%)}to{transform:scale(1)}}
+.hero-slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-slide iframe{position:absolute;left:50%;top:0;height:100%;aspect-ratio:16/9;max-width:100%;transform:translateX(-50%);border:0;background:#000}
+.hero-shade{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));pointer-events:none;z-index:2}
+.hero-info{position:absolute;left:24px;right:24px;bottom:30px;z-index:3;display:flex;justify-content:space-between;align-items:baseline;gap:24px;pointer-events:none}
+.hero-cap{font-size:17px;line-height:1.4;max-width:60ch;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.hero-cap a{color:#fff;pointer-events:auto;text-underline-offset:3px}
+.hero-count{font-variant-numeric:lining-nums tabular-nums;font-size:16px;opacity:.85;white-space:nowrap}
+.hero-btn{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(15,15,15,.38);backdrop-filter:blur(6px);color:#fff;font:inherit;font-size:20px;line-height:1;cursor:pointer;z-index:4;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.hero-btn:hover{background:rgba(15,15,15,.65);border-color:#fff}
+.hero-btn.prev{left:14px}.hero-btn.next{right:14px}
+.hero-segs{position:absolute;left:24px;right:24px;bottom:12px;z-index:4;display:flex;gap:6px}
+.hero-seg{flex:1;height:20px;padding:8px 0;border:0;background:none;cursor:pointer;position:relative}
+.hero-seg::before{content:"";position:absolute;left:0;right:0;top:8px;height:3px;background:rgba(255,255,255,.32)}
+.hero-seg i{position:absolute;left:0;top:8px;height:3px;width:0;background:#fff}
+.hero-seg.done i{width:100%}
+.hero-seg.on.static i{width:100%}
+.hero-seg.on.run i{animation:hero-fill var(--dur) linear forwards}
+@keyframes hero-fill{from{width:0}to{width:100%}}
+.hero:hover .hero-seg.on.run i,.hero:focus-within .hero-seg.on.run i,.hero:hover .hero-slide.on .fg,.hero:focus-within .hero-slide.on .fg{animation-play-state:paused}
+.hero-btn:focus-visible,.hero-seg:focus-visible,.hero:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#herolb{border:0;background:transparent;max-width:96vw;max-height:96vh;margin:auto;overflow:visible}
+#herolb::backdrop{background:rgba(10,10,10,.88)}
+#herolb img{max-width:96vw;max-height:92vh;display:block;background:var(--paper,#f4efe4)}
+#herolb button{position:absolute;top:-38px;right:0;background:none;border:0;color:#fff;font:inherit;font-size:18px;cursor:pointer}
+@media (max-width:900px){.hero{margin-bottom:48px}.hero-info{left:16px;right:16px;bottom:28px}.hero-segs{left:16px;right:16px}.hero-btn{width:38px;height:38px;left:auto}.hero-btn.prev{left:10px}.hero-btn.next{right:10px}.hero-cap{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.hero-slide,.hero-slide.on{transition:none}.hero-slide.on .fg,.hero-seg.on.run i{animation:none}.hero-seg.on i{width:100%}}
+
+.hero{margin-bottom:44px;background:var(--paper,var(--frame,#f4efe4));border:1px solid var(--line)}
+.hero-shade,.hero-info{display:none !important}
+.hero-slide .bg{display:none}
+.hero-slide .fg{object-fit:cover}
+.hero-btn{opacity:0;transition:opacity .25s,background .2s,border-color .2s}
+.hero:hover .hero-btn,.hero:focus-within .hero-btn{opacity:1}
+.hero-segs{left:0;right:0;bottom:0;gap:0}
+.hero-seg{height:14px;padding:0}
+.hero-seg::before{top:auto;bottom:0;height:3px;background:rgba(255,255,255,.28)}
+.hero-seg i{top:auto;bottom:0;height:3px}
+.hero-seg+.hero-seg::before{border-left:2px solid transparent}
+@keyframes hero-kb{from{transform:scale(1)}to{transform:scale(1.035)}}
+@keyframes hero-kb2{from{transform:scale(1.035)}to{transform:scale(1)}}
+
+.hero-slide{transition:none;clip-path:inset(0 0 0 100%);z-index:1}
+.hero[data-dir=back] .hero-slide{clip-path:inset(0 100% 0 0)}
+.hero .hero-slide.on,.hero .hero-slide.leaving{opacity:1;visibility:visible;clip-path:inset(0 0 0 0)}
+.hero .hero-slide.on{z-index:3;transition:clip-path 1s cubic-bezier(.77,0,.18,1)}
+.hero .hero-slide.leaving{z-index:2}
+.hero-slide .pl{position:absolute;inset:0;transform:none !important}
+.hero-slide .fg{transition:filter 1s ease}
+.hero .hero-slide.leaving .fg{filter:brightness(.6)}
+@keyframes hero-kb{from{transform:scale(var(--s0,1)) translate(var(--x0,0%),var(--y0,0%))}to{transform:scale(var(--s1,1.05)) translate(var(--x1,0%),var(--y1,0%))}}
+.hero .hero-slide.on .fg,.hero .hero-slide.leaving .fg,.hero .hero-slide.alt.on .fg{animation:none !important;transform:none !important}
+.hero-sheen{position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.22) 50%,transparent 62%);transform:translateX(110%)}
+.hero[data-dir=back] .hero-sheen{transform:translateX(-110%)}
+.hero-sheen.go{animation:hero-sheen 1.2s cubic-bezier(.4,0,.2,1)}
+.hero[data-dir=back] .hero-sheen.go{animation-name:hero-sheen-b}
+@keyframes hero-sheen{to{transform:translateX(-110%)}}
+@keyframes hero-sheen-b{to{transform:translateX(110%)}}
+@media (prefers-reduced-motion:reduce){.hero-sheen{display:none}.hero .hero-slide.on{transition:none}.hero .hero-slide.on .fg,.hero .hero-slide.leaving .fg{animation:none}.hero-slide .pl{transform:none !important}}
+</style>
+
+<style id="reveal-css">
+.rv{opacity:0;transform:translateY(18px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+.rv.in{opacity:1;transform:none}
+.rule.rv{opacity:1;transform:scaleX(0);transform-origin:left center;transition:transform .9s cubic-bezier(.2,.7,.2,1) .15s}
+.rule.rv.in{transform:scaleX(1)}
+.slide.rv img{transform:scale(1.03);transition:transform 1.3s cubic-bezier(.2,.7,.2,1)}
+.slide.rv.in img{transform:none}
+.pg-bar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--amber,var(--gold,#333));transform:scaleX(0);transform-origin:left;z-index:60;pointer-events:none}
+</style>
+
+<style id="sun-overrides">
+:root{--line:var(--rule-dark);--amber:var(--accent)}
+aside.sidebar{padding-top:14px !important;gap:0 !important}
+main{padding-top:84px !important}
+.side-block{margin-top:clamp(24px,4vh,40px)}
+.hero{margin-top:0}
+.hero-seg.on.vid i{width:0}
+@media (max-width:980px){aside.sidebar{padding-top:14px !important}main{padding-top:40px !important}}
+</style>
+</head>
+<body>
+
+<div class="deco" aria-hidden="true"><span class="l1"></span><span class="l2"></span><span class="l3"></span><span class="dot"></span></div>
+
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <a class="back" href="index.html">← Back to projects</a>
+    <div class="sidebar-body">
+      <h1 class="title">Sun Pharma AI Agent</h1>
+      <p class="tagline">AI content for Amazon listings</p>
+
+      <div class="side-block">
+        <h3>Skills</h3>
+        <ul class="skills">
+          <li>AI content development</li>
+          <li>Amazon Seller Central and SEO</li>
+          <li>Demographic research</li>
+          <li>Prompt engineering</li>
+          <li>Presenting to stakeholders</li>
+        </ul>
+      </div>
+
+      <div class="side-block">
+        <h3>Challenge</h3>
+        <p>Design a prototype AI agent that generates Amazon PDP and A+ content for Sun Pharma's OTC products while meeting Amazon compliance requirements.</p>
+      </div>
+
+      <div class="side-block">
+        <h3>Role</h3>
+        <p>Product Design Intern</p>
+      </div>
+
+      <div class="side-block">
+        <h3>Team</h3>
+        <p>Sun Pharma Consumer Healthcare, CHC / OTC</p>
+      </div>
+
+      <div class="side-block">
+        <h3>Tools</h3>
+        <ul class="skills">
+          <li>Figma</li>
+          <li>Helium 10</li>
+          <li>ChatGPT</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+<div class="hero" id="hero" role="region" aria-roledescription="carousel" aria-label="Project images" tabindex="-1">
+  <div class="hero-stage"></div>
+  <div class="hero-shade"></div>
+  <button type="button" class="hero-btn prev" aria-label="Previous image">&larr;</button>
+  <button type="button" class="hero-btn next" aria-label="Next image">&rarr;</button>
+  <div class="hero-info"><span class="hero-cap" aria-live="off"></span><span class="hero-count"></span></div>
+  <div class="hero-segs"></div>
+</div>
+
+
+    <section id="about">
+      <h2>About the AI Agent</h2>
+      <p>I built a prototype AI agent for generating Amazon PDP and A+ content during my Product Design internship on Sun Pharma's Consumer Healthcare team. Below is a walkthrough of the working tool, followed by the full presentation I gave to the OTC team.</p>
+      <div class="frame">
+        <div class="lockup">
+          <img src="assets/sun-pharma-logo.png" alt="Sun Pharma logo">
+          <div class="rule"></div>
+          <div class="txt"><b>Sun Pharmaceutical Industries Ltd.</b>Consumer Healthcare / OTC division</div>
+        </div>
+      </div>
+      <p class="frame-caption">Client project, completed as a Product Design intern.</p>
+    </section>
+
+    <section id="demo">
+      <h2>The agent in action</h2>
+      <p>A screen recording of the working prototype, navigating Home, Generate, Playbook, Glossary, and Settings.</p>
+      <div class="frame video-frame">
+        <video controls muted loop playsinline preload="auto" poster="assets/video-poster.jpg">
+          <source src="assets/sun-pharma-ai-agent-demo.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. <a href="assets/sun-pharma-ai-agent-demo.mp4">Download the demo</a> instead.
+        </video>
+      </div>
+      <div class="video-caption">
+        <span>Screen recording of the AI agent prototype, designed and built during the internship.</span>
+        <span class="pill">0:41 walkthrough</span>
+      </div>
+      <div class="chapters" id="chapters">
+        <button class="chapter-btn" data-t="0"><span class="t">0:00</span>Home</button>
+        <button class="chapter-btn" data-t="8"><span class="t">0:08</span>Generate</button>
+        <button class="chapter-btn" data-t="16"><span class="t">0:16</span>Review &amp; approve</button>
+        <button class="chapter-btn" data-t="24"><span class="t">0:24</span>Playbook rules</button>
+        <button class="chapter-btn" data-t="32"><span class="t">0:32</span>Glossary</button>
+        <button class="chapter-btn" data-t="34"><span class="t">0:34</span>Settings</button>
+      </div>
+    </section>
+
+    <section id="deck">
+      <h2>CHC internship presentation</h2>
+      <p>The complete deck I presented to Sun Pharma's OTC team, shown here as delivered. Click any slide to view it full size.</p>
+      <div class="stats">
+        <div class="stat"><span class="n">25</span><span class="l">slides presented</span></div>
+        <div class="stat"><span class="n">5</span><span class="l">agenda sections</span></div>
+        <div class="stat"><span class="n">4</span><span class="l">brands researched</span></div>
+        <div class="stat"><span class="n">1</span><span class="l">live prototype demo</span></div>
+      </div>
+      <div class="deck-meta">
+        <span class="pill">Presented August 2026</span>
+        <span class="pill">CHC · OTC Team</span>
+      </div>
+      <div class="filter-row" id="filter-row"></div>
+      <div class="slide-grid" id="slide-grid"></div>
+    </section>
+
+    <section id="reflect">
+      <h2>Reflection</h2>
+      <div class="cols-2">
+        <div class="col">
+          <h3>Challenges encountered</h3>
+          <p>Balancing Amazon compliance requirements with customer-focused product messaging. Learning effective AI prompting to work around image-generation limitations. Aligning communication across design, brand, and compliance stakeholders.</p>
+        </div>
+        <div class="col">
+          <h3>Takeaways and learnings</h3>
+          <p>Customer-first thinking, creating content that builds trust, not just compliance. AI-driven problem solving through deliberate prompt engineering. Collaboration and adaptability working across cross-functional teams.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="closing">
+      <a class="btn" href="index.html">More projects →</a>
+    </div>
+
+    <footer>
+      <p>Case study by Audrey Choi · Stanford Design Engineering, Class of 2027</p>
+    </footer>
+
+  </main>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lb-close">Close ×</button>
+  <button class="lb-nav lb-prev" id="lb-prev" aria-label="Previous slide">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-nav lb-next" id="lb-next" aria-label="Next slide">›</button>
+  <div class="lb-strip" id="lb-strip"></div>
+  <div class="lb-count" id="lb-count"></div>
+</div>
+
+<script>
+  const totalSlides = 25;
+  const dividers = new Set([5, 11, 18, 23, 24, 25]); // section-title and closing slides shown full width
+
+  // Categories mirror the deck's own Agenda slide (slide 3) and slide ranges.
+  const categories = [
+    {key:'overview', label:'Overview',                 range:[1,4]},
+    {key:'content',  label:'AI Content Development',   range:[[5,10],[15,17]]},
+    {key:'seo',      label:'Seller Central & SEO',     range:[11,14]},
+    {key:'demo',     label:'Demographic Research',     range:[18,22]},
+    {key:'wrap',     label:'Challenges & Takeaways',   range:[23,25]},
+  ];
+  function slideCategory(i){
+    for(const c of categories){
+      const ranges = Array.isArray(c.range[0]) ? c.range : [c.range];
+      for(const [a,b] of ranges){ if(i>=a && i<=b) return c.key; }
+    }
+    return 'overview';
+  }
+
+  const grid = document.getElementById('slide-grid');
+  const filterRow = document.getElementById('filter-row');
+  const slidePaths = [];
+
+  // filter chips
+  const allChip = document.createElement('button');
+  allChip.className = 'filter-chip active';
+  allChip.innerHTML = '<span class="dot"></span>All slides';
+  allChip.dataset.filter = 'all';
+  filterRow.appendChild(allChip);
+  categories.forEach(c=>{
+    const chip = document.createElement('button');
+    chip.className = 'filter-chip';
+    chip.innerHTML = `<span class="dot"></span>${c.label}`;
+    chip.dataset.filter = c.key;
+    filterRow.appendChild(chip);
+  });
+
+  for(let i=1;i<=totalSlides;i++){
+    const num = String(i).padStart(2,'0');
+    const path = `assets/slides/slide-${num}.jpg`;
+    slidePaths.push(path);
+    const card = document.createElement('div');
+    card.className = 'slide-card' + (dividers.has(i) ? ' divider' : '');
+    card.dataset.cat = slideCategory(i);
+    card.innerHTML = `<span class="num">${i} / ${totalSlides}</span><img src="${path}" alt="Slide ${i}" loading="lazy">`;
+    card.addEventListener('click', ()=> openLightbox(i-1));
+    grid.appendChild(card);
+  }
+
+  filterRow.addEventListener('click', (e)=>{
+    const chip = e.target.closest('.filter-chip');
+    if(!chip) return;
+    filterRow.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const f = chip.dataset.filter;
+    document.querySelectorAll('.slide-card').forEach(card=>{
+      card.classList.toggle('hidden', f!=='all' && card.dataset.cat!==f);
+    });
+  });
+
+  // ---- Lightbox with filmstrip ----
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lb-img');
+  const lbCount = document.getElementById('lb-count');
+  const lbStrip = document.getElementById('lb-strip');
+  let current = 0;
+
+  slidePaths.forEach((p,idx)=>{
+    const t = document.createElement('img');
+    t.src = p; t.className = 'lb-thumb'; t.dataset.idx = idx; t.alt = '';
+    t.addEventListener('click', (e)=>{ e.stopPropagation(); current = idx; updateLightbox(); });
+    lbStrip.appendChild(t);
+  });
+
+  function openLightbox(idx){
+    current = idx;
+    updateLightbox();
+    lightbox.classList.add('open');
+  }
+  function updateLightbox(){
+    lbImg.src = slidePaths[current];
+    lbCount.textContent = `Slide ${current+1} of ${totalSlides}`;
+    lbStrip.querySelectorAll('.lb-thumb').forEach((t,i)=>{
+      t.classList.toggle('active', i===current);
+      if(i===current) t.scrollIntoView({inline:'center', block:'nearest', behavior:'smooth'});
+    });
+  }
+  document.getElementById('lb-close').addEventListener('click', ()=> lightbox.classList.remove('open'));
+  document.getElementById('lb-prev').addEventListener('click', ()=>{ current = (current-1+totalSlides)%totalSlides; updateLightbox(); });
+  document.getElementById('lb-next').addEventListener('click', ()=>{ current = (current+1)%totalSlides; updateLightbox(); });
+  lightbox.addEventListener('click', (e)=>{ if(e.target === lightbox) lightbox.classList.remove('open'); });
+  document.addEventListener('keydown', (e)=>{
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') lightbox.classList.remove('open');
+    if(e.key === 'ArrowLeft') document.getElementById('lb-prev').click();
+    if(e.key === 'ArrowRight') document.getElementById('lb-next').click();
+  });
+
+  // ---- Video chapters ----
+  const video = document.querySelector('.video-frame video');
+  const chapterBtns = document.querySelectorAll('.chapter-btn');
+  chapterBtns.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      video.currentTime = parseFloat(btn.dataset.t);
+      video.play();
+    });
+  });
+  if(video && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches){
+    new IntersectionObserver(([e])=>{
+      if(e.isIntersecting){ const p = video.play(); if(p && p.catch) p.catch(()=>{}); } else { video.pause(); }
+    }, {threshold:0.4}).observe(video);
+  }
+  if(video){
+    video.addEventListener('timeupdate', ()=>{
+      let activeBtn = chapterBtns[0];
+      chapterBtns.forEach(btn=>{
+        if(video.currentTime >= parseFloat(btn.dataset.t)) activeBtn = btn;
+      });
+      chapterBtns.forEach(b=>b.classList.remove('active'));
+      activeBtn.classList.add('active');
+    });
+  }
+</script>
+
+
+<script>
+(function(){
+  var CFG = {"src": "PATHS", "paths": ["assets/slides/slide-01.jpg", "assets/slides/slide-02.jpg", "assets/slides/slide-03.jpg", "assets/slides/slide-04.jpg", "assets/slides/slide-05.jpg", "assets/slides/slide-06.jpg", "assets/slides/slide-07.jpg", "assets/slides/slide-08.jpg", "assets/slides/slide-09.jpg", "assets/slides/slide-10.jpg", "assets/slides/slide-11.jpg", "assets/slides/slide-12.jpg", "assets/slides/slide-13.jpg", "assets/slides/slide-14.jpg", "assets/slides/slide-15.jpg", "assets/slides/slide-16.jpg", "assets/slides/slide-17.jpg", "assets/slides/slide-18.jpg", "assets/slides/slide-19.jpg", "assets/slides/slide-20.jpg", "assets/slides/slide-21.jpg", "assets/slides/slide-22.jpg", "assets/slides/slide-23.jpg", "assets/slides/slide-24.jpg", "assets/slides/slide-25.jpg"], "pick": [0, 5, 7, 11, 14, 18, 20], "canva": "", "canvaLink": "", "video": "assets/sun-pharma-ai-agent-demo.mp4", "poster": "assets/video-poster.jpg"};
+  /* To add a prototype video as the first slide (muted, looping), put the file next to this page and set CFG.video = 'prototype.mp4'. */
+  var hero = document.getElementById('hero'); if(!hero) return;
+  var stage = hero.querySelector('.hero-stage'), segsEl = hero.querySelector('.hero-segs');
+  var capEl = hero.querySelector('.hero-cap'), cntEl = hero.querySelector('.hero-count');
+  var items = [];
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) CFG.video = '';
+  if (CFG.video) items.push({type:'video', src:CFG.video, poster:CFG.poster, alt:'Screen recording of the AI agent prototype'});
+  if (CFG.canva) items.push({type:'embed', src:CFG.canva, alt:'Project proposal video', link:CFG.canvaLink, label:'Project Proposal NXN Labs and East Village NYC'});
+  var pool = [];
+  if (CFG.src === 'PATHS') { CFG.paths.forEach(function(u,i){ pool.push({src:u, alt:'Presentation slide '+(i+1)}); }); } else if (CFG.src === 'DECK') { try { DECK.forEach(function(u,i){ pool.push({src:u, alt:'Pitch deck slide '+(i+1)}); }); } catch(e){} }
+  else document.querySelectorAll('.slide img').forEach(function(im){ pool.push({src:im.currentSrc||im.src, alt:im.alt}); });
+  CFG.pick.forEach(function(i){ if(pool[i] && pool[i].src) items.push({type:'img', src:pool[i].src, alt:pool[i].alt}); });
+  if (!items.length) { hero.remove(); return; }
+
+  var idx = 0, slides = [], segs = [], first = true;
+  var KB = [{'--s0':1,'--s1':1.06,'--x0':'0%','--y0':'0%','--x1':'-1.2%','--y1':'-.8%'},
+            {'--s0':1.06,'--s1':1,'--x0':'1.2%','--y0':'.8%','--x1':'0%','--y1':'0%'},
+            {'--s0':1.05,'--s1':1.05,'--x0':'1.6%','--y0':'0%','--x1':'-1.6%','--y1':'0%'},
+            {'--s0':1,'--s1':1.06,'--x0':'0%','--y0':'0%','--x1':'1.2%','--y1':'-.8%'}];
+  var sheen = document.createElement('div'); sheen.className='hero-sheen'; hero.appendChild(sheen);
+  hero.dataset.dir = 'fwd';
+  items.forEach(function(it,i){
+    var s = document.createElement('div'); s.className = 'hero-slide' + (i%2 ? ' alt' : '');
+    var kb = KB[i%KB.length]; Object.keys(kb).forEach(function(k){ s.style.setProperty(k, kb[k]); });
+    s.setAttribute('role','group'); s.setAttribute('aria-label',(i+1)+' of '+items.length);
+    if (it.type === 'img') {
+      var bg = document.createElement('img'); bg.className='bg'; bg.alt=''; bg.src=it.src; bg.setAttribute('aria-hidden','true');
+      var fg = document.createElement('img'); fg.className='fg'; fg.alt=it.alt; fg.src=it.src;
+      fg.addEventListener('click', function(){ openLb(it.src, it.alt); });
+      var pl = document.createElement('div'); pl.className='pl'; pl.appendChild(fg); s.appendChild(pl);
+    } else if (it.type === 'video') {
+      var v = document.createElement('video'); v.muted=true; v.autoplay=true; v.playsInline=true; v.preload='auto'; v.setAttribute('muted',''); v.setAttribute('playsinline',''); v.setAttribute('aria-label',it.alt);
+      if (it.poster) v.poster = it.poster; v.src = it.src;
+      v.addEventListener('ended', function(){ if (i===idx) show(idx+1); });
+      v.addEventListener('timeupdate', function(){ if (i===idx && v.duration) segs[i].firstChild.style.width = (v.currentTime / v.duration * 100) + '%'; });
+      v.addEventListener('error', function(){ it.broken = true; if (segs[i]) segs[i].style.display = 'none'; if (i===idx) show(i+1); });
+      s.appendChild(v);
+    }
+    stage.appendChild(s); slides.push(s);
+    var b = document.createElement('button'); b.type='button'; b.className='hero-seg'; b.setAttribute('aria-label','Show image '+(i+1)); b.appendChild(document.createElement('i'));
+    b.addEventListener('click', function(){ show(i); });
+    b.querySelector('i').addEventListener('animationend', function(){ if (i===idx) show(idx+1); });
+    segsEl.appendChild(b); segs.push(b);
+  });
+
+  function show(i){
+    var old = idx, n = items.length; idx = (i + n) % n;
+    for (var g = 0; g < n && items[idx].broken; g++) idx = (idx + 1) % n;
+    hero.dataset.dir = (idx < old && !(old === n-1 && idx === 0)) ? 'back' : 'fwd';
+    var it = items[idx];
+    if (it.type === 'embed' && !slides[idx].querySelector('iframe')) {
+      var f = document.createElement('iframe'); f.src = it.src; f.title = it.alt; f.setAttribute('allowfullscreen','allowfullscreen'); f.setAttribute('allow','autoplay; fullscreen'); slides[idx].appendChild(f);
+    }
+    slides.forEach(function(s,k){
+      if (k===idx) { s.classList.remove('leaving'); s.classList.add('on'); }
+      else if (s.classList.contains('on')) { s.classList.remove('on'); s.classList.add('leaving'); clearTimeout(s._t); s._t = setTimeout(function(){ s.classList.remove('leaving'); }, 1100); }
+      var v = s.querySelector('video'); if (v) { if (k===idx) { if (v.ended) v.currentTime = 0; var p=v.play(); if(p&&p.catch)p.catch(function(){}); } else v.pause(); }
+    });
+    segs.forEach(function(b,k){
+      b.classList.remove('on','run','static','done'); b.firstChild.style.width = '';
+      if (k < idx) b.classList.add('done');
+      if (k === idx) { b.classList.add('on'); b.classList.add(it.type==='embed' ? 'static' : it.type==='video' ? 'vid' : 'run'); b.setAttribute('aria-current','true'); }
+      else b.removeAttribute('aria-current');
+      if (k === idx) { void b.offsetWidth; }
+    });
+    capEl.textContent = '';
+    if (it.link) { var a = document.createElement('a'); a.href=it.link; a.target='_blank'; a.rel='noopener'; a.textContent=it.label; capEl.appendChild(a); }
+    else capEl.textContent = it.alt;
+    cntEl.textContent = (idx+1) + ' / ' + items.length;
+    if (!first) { sheen.classList.remove('go'); void sheen.offsetWidth; sheen.classList.add('go'); }
+    first = false;
+  }
+  hero.querySelector('.prev').addEventListener('click', function(){ show(idx-1); });
+  hero.querySelector('.next').addEventListener('click', function(){ show(idx+1); });
+  hero.addEventListener('keydown', function(e){
+    if (e.key==='ArrowLeft'){ show(idx-1); e.preventDefault(); }
+    if (e.key==='ArrowRight'){ show(idx+1); e.preventDefault(); }
+  });
+  hero.addEventListener('mousemove', function(e){ var r = hero.getBoundingClientRect(); hero.style.setProperty('--mx', ((e.clientX-r.left)/r.width-.5)*2); hero.style.setProperty('--my', ((e.clientY-r.top)/r.height-.5)*2); });
+  hero.addEventListener('mouseleave', function(){ hero.style.setProperty('--mx',0); hero.style.setProperty('--my',0); });
+  var x0 = null;
+  stage.addEventListener('pointerdown', function(e){ x0 = e.clientX; });
+  stage.addEventListener('pointerup', function(e){ if (x0===null) return; var dx=e.clientX-x0; x0=null; if (Math.abs(dx)>48) show(dx<0 ? idx+1 : idx-1); });
+
+  var lb = document.createElement('dialog'); lb.id='herolb';
+  lb.innerHTML = '<button type="button" aria-label="Close">Close</button><img alt="">';
+  document.body.appendChild(lb);
+  var lbi = lb.querySelector('img');
+  function openLb(src, alt){ lbi.src=src; lbi.alt=alt||''; lb.showModal(); }
+  lb.querySelector('button').addEventListener('click', function(){ lb.close(); });
+  lb.addEventListener('click', function(e){ if (e.target===lb || e.target===lbi) lb.close(); });
+  show(0);
+})();
+</script>
+
+<script>
+(function(){
+  var bar = document.createElement('div'); bar.className = 'pg-bar'; document.body.appendChild(bar);
+  var tick = false;
+  function upd(){ var h = document.documentElement.scrollHeight - innerHeight; bar.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, scrollY / h) : 0) + ')'; tick = false; }
+  addEventListener('scroll', function(){ if (!tick) { tick = true; requestAnimationFrame(upd); } }, {passive:true}); upd();
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches || !('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.1, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('main section').forEach(function(sec){
+    [].slice.call(sec.children).forEach(function(k,i){
+      if (k.tagName === 'SCRIPT' || k.tagName === 'STYLE') return;
+      k.classList.add('rv'); k.style.setProperty('--d', Math.min(i,3)*60 + 'ms'); io.observe(k);
+    });
+  });
+})();
+</script>
+</body>
+</html>
