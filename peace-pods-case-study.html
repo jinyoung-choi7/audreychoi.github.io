@@ -132,6 +132,91 @@ footer .line1{font-family:var(--display);font-style:italic;font-weight:500;font-
 }
 @media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
 </style>
+
+<style id="hero-css">
+main{padding-top:112px !important}
+aside,.side{padding-top:104px !important;gap:20px !important}
+.meta{gap:16px !important;padding-top:8px !important;padding-bottom:0 !important;justify-content:flex-start !important}
+.meta li{line-height:1.5 !important}
+.meta h3{margin-bottom:2px !important}
+.hero{--dur:6.5s;position:relative;z-index:1;width:100%;aspect-ratio:16/9;margin:0 0 72px;background:#111;overflow:hidden;color:#fff}
+.hero-slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s .9s}
+.hero-slide.on{opacity:1;visibility:visible;transition:opacity .9s ease}
+.hero-slide .bg{position:absolute;inset:-6%;width:112%;height:112%;object-fit:cover;filter:blur(34px) brightness(.55) saturate(1.1)}
+.hero-slide .fg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;cursor:zoom-in;transform-origin:50% 50%}
+.hero-slide.on .fg{animation:hero-kb calc(var(--dur) + 1.5s) ease-out forwards}
+.hero-slide.alt.on .fg{animation-name:hero-kb2}
+@keyframes hero-kb{from{transform:scale(1)}to{transform:scale(1.06) translate(-.8%,-.4%)}}
+@keyframes hero-kb2{from{transform:scale(1.06) translate(.8%,.4%)}to{transform:scale(1)}}
+.hero-slide video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.hero-slide iframe{position:absolute;left:50%;top:0;height:100%;aspect-ratio:16/9;max-width:100%;transform:translateX(-50%);border:0;background:#000}
+.hero-shade{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,0));pointer-events:none;z-index:2}
+.hero-info{position:absolute;left:24px;right:24px;bottom:30px;z-index:3;display:flex;justify-content:space-between;align-items:baseline;gap:24px;pointer-events:none}
+.hero-cap{font-size:17px;line-height:1.4;max-width:60ch;text-shadow:0 1px 8px rgba(0,0,0,.5)}
+.hero-cap a{color:#fff;pointer-events:auto;text-underline-offset:3px}
+.hero-count{font-variant-numeric:lining-nums tabular-nums;font-size:16px;opacity:.85;white-space:nowrap}
+.hero-btn{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,255,255,.45);background:rgba(15,15,15,.38);backdrop-filter:blur(6px);color:#fff;font:inherit;font-size:20px;line-height:1;cursor:pointer;z-index:4;display:flex;align-items:center;justify-content:center;transition:background .2s,border-color .2s}
+.hero-btn:hover{background:rgba(15,15,15,.65);border-color:#fff}
+.hero-btn.prev{left:14px}.hero-btn.next{right:14px}
+.hero-segs{position:absolute;left:24px;right:24px;bottom:12px;z-index:4;display:flex;gap:6px}
+.hero-seg{flex:1;height:20px;padding:8px 0;border:0;background:none;cursor:pointer;position:relative}
+.hero-seg::before{content:"";position:absolute;left:0;right:0;top:8px;height:3px;background:rgba(255,255,255,.32)}
+.hero-seg i{position:absolute;left:0;top:8px;height:3px;width:0;background:#fff}
+.hero-seg.done i{width:100%}
+.hero-seg.on.static i{width:100%}
+.hero-seg.on.run i{animation:hero-fill var(--dur) linear forwards}
+@keyframes hero-fill{from{width:0}to{width:100%}}
+.hero:hover .hero-seg.on.run i,.hero:focus-within .hero-seg.on.run i,.hero:hover .hero-slide.on .fg,.hero:focus-within .hero-slide.on .fg{animation-play-state:paused}
+.hero-btn:focus-visible,.hero-seg:focus-visible,.hero:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#herolb{border:0;background:transparent;max-width:96vw;max-height:96vh;margin:auto;overflow:visible}
+#herolb::backdrop{background:rgba(10,10,10,.88)}
+#herolb img{max-width:96vw;max-height:92vh;display:block;background:var(--paper,#f4efe4)}
+#herolb button{position:absolute;top:-38px;right:0;background:none;border:0;color:#fff;font:inherit;font-size:18px;cursor:pointer}
+@media (max-width:900px){.hero{margin-bottom:48px}.hero-info{left:16px;right:16px;bottom:28px}.hero-segs{left:16px;right:16px}.hero-btn{width:38px;height:38px;left:auto}.hero-btn.prev{left:10px}.hero-btn.next{right:10px}.hero-cap{font-size:15px}}
+@media (prefers-reduced-motion:reduce){.hero-slide,.hero-slide.on{transition:none}.hero-slide.on .fg,.hero-seg.on.run i{animation:none}.hero-seg.on i{width:100%}}
+
+.hero{margin-bottom:44px;background:var(--paper,var(--frame,#f4efe4));border:1px solid var(--line)}
+.hero-shade,.hero-info{display:none !important}
+.hero-slide .bg{display:none}
+.hero-slide .fg{object-fit:cover}
+.hero-btn{opacity:0;transition:opacity .25s,background .2s,border-color .2s}
+.hero:hover .hero-btn,.hero:focus-within .hero-btn{opacity:1}
+.hero-segs{left:0;right:0;bottom:0;gap:0}
+.hero-seg{height:14px;padding:0}
+.hero-seg::before{top:auto;bottom:0;height:3px;background:rgba(255,255,255,.28)}
+.hero-seg i{top:auto;bottom:0;height:3px}
+.hero-seg+.hero-seg::before{border-left:2px solid transparent}
+@keyframes hero-kb{from{transform:scale(1)}to{transform:scale(1.035)}}
+@keyframes hero-kb2{from{transform:scale(1.035)}to{transform:scale(1)}}
+
+.hero-slide{transition:none;clip-path:inset(0 0 0 100%);z-index:1}
+.hero[data-dir=back] .hero-slide{clip-path:inset(0 100% 0 0)}
+.hero .hero-slide.on,.hero .hero-slide.leaving{opacity:1;visibility:visible;clip-path:inset(0 0 0 0)}
+.hero .hero-slide.on{z-index:3;transition:clip-path 1s cubic-bezier(.77,0,.18,1)}
+.hero .hero-slide.leaving{z-index:2}
+.hero-slide .pl{position:absolute;inset:0;transform:none !important}
+.hero-slide .fg{transition:filter 1s ease}
+.hero .hero-slide.leaving .fg{filter:brightness(.6)}
+@keyframes hero-kb{from{transform:scale(var(--s0,1)) translate(var(--x0,0%),var(--y0,0%))}to{transform:scale(var(--s1,1.05)) translate(var(--x1,0%),var(--y1,0%))}}
+.hero .hero-slide.on .fg,.hero .hero-slide.leaving .fg,.hero .hero-slide.alt.on .fg{animation:none !important;transform:none !important}
+.hero-sheen{position:absolute;inset:0;z-index:4;pointer-events:none;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.22) 50%,transparent 62%);transform:translateX(110%)}
+.hero[data-dir=back] .hero-sheen{transform:translateX(-110%)}
+.hero-sheen.go{animation:hero-sheen 1.2s cubic-bezier(.4,0,.2,1)}
+.hero[data-dir=back] .hero-sheen.go{animation-name:hero-sheen-b}
+@keyframes hero-sheen{to{transform:translateX(-110%)}}
+@keyframes hero-sheen-b{to{transform:translateX(110%)}}
+@media (prefers-reduced-motion:reduce){.hero-sheen{display:none}.hero .hero-slide.on{transition:none}.hero .hero-slide.on .fg,.hero .hero-slide.leaving .fg{animation:none}.hero-slide .pl{transform:none !important}}
+</style>
+
+<style id="reveal-css">
+.rv{opacity:0;transform:translateY(18px);transition:opacity .75s ease,transform .75s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+.rv.in{opacity:1;transform:none}
+.rule.rv{opacity:1;transform:scaleX(0);transform-origin:left center;transition:transform .9s cubic-bezier(.2,.7,.2,1) .15s}
+.rule.rv.in{transform:scaleX(1)}
+.slide.rv img{transform:scale(1.03);transition:transform 1.3s cubic-bezier(.2,.7,.2,1)}
+.slide.rv.in img{transform:none}
+.pg-bar{position:fixed;top:0;left:0;right:0;height:3px;background:var(--amber,var(--gold,#333));transform:scaleX(0);transform-origin:left;z-index:60;pointer-events:none}
+</style>
 </head>
 <body>
 
@@ -147,16 +232,25 @@ footer .line1{font-family:var(--display);font-style:italic;font-weight:500;font-
     <p class="sub">A wellness space for StartX founders</p>
   </div>
   <div class="meta">
-    <div><h3>Challenge</h3><p>Design a wellness space for burnt-out startup founders at StartX in Stanford Research Park, for Design 121.</p></div>
-    <div><h3>Team</h3><p>Audrey, Sophie Cline, Sophia Awuzie (Team Rock, Paper, Scissors)</p></div>
-    <div><h3>My Role</h3><p>Needfinding, concept sketching, prototype testing</p></div>
     <div><h3>Skills</h3>
       <ul><li>Needfinding interviews</li><li>Synthesis and point of view</li><li>How might we framing</li><li>Concept sketching</li><li>Prototype testing</li><li>Business case</li><li>Teamwork</li></ul>
     </div>
+    <div><h3>Challenge</h3><p>Design a wellness space for burnt-out startup founders at StartX in Stanford Research Park, for Design 121.</p></div>
+    <div><h3>Role</h3><p>Needfinding, concept sketching, prototype testing</p></div>
+    <div><h3>Team</h3><p>Audrey, Sophie Cline, Sophia Awuzie (Team Rock, Paper, Scissors)</p></div>
   </div>
 </aside>
 
 <main>
+<div class="hero" id="hero" role="region" aria-roledescription="carousel" aria-label="Project images" tabindex="-1">
+  <div class="hero-stage"></div>
+  <div class="hero-shade"></div>
+  <button type="button" class="hero-btn prev" aria-label="Previous image">&larr;</button>
+  <button type="button" class="hero-btn next" aria-label="Next image">&rarr;</button>
+  <div class="hero-info"><span class="hero-cap" aria-live="off"></span><span class="hero-count"></span></div>
+  <div class="hero-segs"></div>
+</div>
+
 <section><h2>About Peace Pods</h2><div class="rule"></div><p>Peace Pods are private spaces inside StartX where founders and their team members can step away from the work environment to rest, recharge, and reset. We designed them from needfinding interviews, through prototype trade shows, to a tested and built solution.</p><p>I designed them with Sophie Cline and Sophia Awuzie for Design 121 as team Rock, Paper, Scissors, working with founders at StartX in Stanford Research Park.</p><figure class="slide"><button type="button" data-slide="01" aria-label="Enlarge: Title slide: Peace Pods, team Rock, Paper, Scissors, Stanford Research Park and StartX"><img data-slide="01" alt="Title slide: Peace Pods, team Rock, Paper, Scissors, Stanford Research Park and StartX" loading="lazy"></button></figure></section>
 
 <section><h2>Needfinding</h2><div class="rule"></div><p>We interviewed founders, mentors, and StartX community members to understand the emotional texture of startup life at Stanford Research Park. Six conversations, one accelerator.</p><div class="persona"><div><b>Jennifer Appel.</b> Founder of 16 Paws Luxury Pet Co., inspired by the joyful life she shares with her four dogs.</div><div><b>Jim Benton.</b> Current founder and lead mentor at StartX, working on his next project, Alignment.io.</div><div><b>Teddy Solomon.</b> Co-founder and CEO of Fizz, a social media platform centered around anonymous college communities.</div><div><b>Char Kwon.</b> Co-founder and CEO of FastrakAI, mentor for other startup founders, and early-stage investor.</div><div><b>Senching.</b> Stanford senior pursuing Mechanical Engineering who has worked at a startup.</div><div><b>Other StartX founders.</b> Founders we interviewed casually on-site at StartX while observing the environment.</div></div><figure class="slide"><button type="button" data-slide="02" aria-label="Enlarge: Needfinding slide with the interviewees"><img data-slide="02" alt="Needfinding slide with the interviewees" loading="lazy"></button></figure></section>
@@ -618,6 +712,114 @@ footer .line1{font-family:var(--display);font-style:italic;font-weight:500;font-
     playBtn.addEventListener('click',function(){playing=!playing;syncIcon();reset();});
     syncIcon();render();reset();
   })();
+})();
+</script>
+
+<script>
+(function(){
+  var CFG = {"src": "slides", "pick": [0, 11, 10, 8, 7, 6, 12], "canva": "", "canvaLink": "", "video": ""};
+  /* To add a prototype video as the first slide (muted, looping), put the file next to this page and set CFG.video = 'prototype.mp4'. */
+  var hero = document.getElementById('hero'); if(!hero) return;
+  var stage = hero.querySelector('.hero-stage'), segsEl = hero.querySelector('.hero-segs');
+  var capEl = hero.querySelector('.hero-cap'), cntEl = hero.querySelector('.hero-count');
+  var items = [];
+  if (CFG.video) items.push({type:'video', src:CFG.video, alt:'Prototype video'});
+  if (CFG.canva) items.push({type:'embed', src:CFG.canva, alt:'Project proposal video', link:CFG.canvaLink, label:'Project Proposal NXN Labs and East Village NYC'});
+  var pool = [];
+  if (CFG.src === 'DECK') { try { DECK.forEach(function(u,i){ pool.push({src:u, alt:'Pitch deck slide '+(i+1)}); }); } catch(e){} }
+  else document.querySelectorAll('.slide img').forEach(function(im){ pool.push({src:im.currentSrc||im.src, alt:im.alt}); });
+  CFG.pick.forEach(function(i){ if(pool[i] && pool[i].src) items.push({type:'img', src:pool[i].src, alt:pool[i].alt}); });
+  if (!items.length) { hero.remove(); return; }
+
+  var idx = 0, slides = [], segs = [], first = true;
+  var KB = [{'--s0':1,'--s1':1.06,'--x0':'0%','--y0':'0%','--x1':'-1.2%','--y1':'-.8%'},
+            {'--s0':1.06,'--s1':1,'--x0':'1.2%','--y0':'.8%','--x1':'0%','--y1':'0%'},
+            {'--s0':1.05,'--s1':1.05,'--x0':'1.6%','--y0':'0%','--x1':'-1.6%','--y1':'0%'},
+            {'--s0':1,'--s1':1.06,'--x0':'0%','--y0':'0%','--x1':'1.2%','--y1':'-.8%'}];
+  var sheen = document.createElement('div'); sheen.className='hero-sheen'; hero.appendChild(sheen);
+  hero.dataset.dir = 'fwd';
+  items.forEach(function(it,i){
+    var s = document.createElement('div'); s.className = 'hero-slide' + (i%2 ? ' alt' : '');
+    var kb = KB[i%KB.length]; Object.keys(kb).forEach(function(k){ s.style.setProperty(k, kb[k]); });
+    s.setAttribute('role','group'); s.setAttribute('aria-label',(i+1)+' of '+items.length);
+    if (it.type === 'img') {
+      var bg = document.createElement('img'); bg.className='bg'; bg.alt=''; bg.src=it.src; bg.setAttribute('aria-hidden','true');
+      var fg = document.createElement('img'); fg.className='fg'; fg.alt=it.alt; fg.src=it.src;
+      fg.addEventListener('click', function(){ openLb(it.src, it.alt); });
+      var pl = document.createElement('div'); pl.className='pl'; pl.appendChild(fg); s.appendChild(pl);
+    } else if (it.type === 'video') {
+      var v = document.createElement('video'); v.src=it.src; v.muted=true; v.loop=true; v.autoplay=true; v.playsInline=true; v.setAttribute('muted',''); v.setAttribute('aria-label',it.alt); s.appendChild(v);
+    }
+    stage.appendChild(s); slides.push(s);
+    var b = document.createElement('button'); b.type='button'; b.className='hero-seg'; b.setAttribute('aria-label','Show image '+(i+1)); b.appendChild(document.createElement('i'));
+    b.addEventListener('click', function(){ show(i); });
+    b.querySelector('i').addEventListener('animationend', function(){ if (i===idx) show(idx+1); });
+    segsEl.appendChild(b); segs.push(b);
+  });
+
+  function show(i){
+    var old = idx, n = items.length; idx = (i + n) % n;
+    hero.dataset.dir = (idx < old && !(old === n-1 && idx === 0)) ? 'back' : 'fwd';
+    var it = items[idx];
+    if (it.type === 'embed' && !slides[idx].querySelector('iframe')) {
+      var f = document.createElement('iframe'); f.src = it.src; f.title = it.alt; f.setAttribute('allowfullscreen','allowfullscreen'); f.setAttribute('allow','autoplay; fullscreen'); slides[idx].appendChild(f);
+    }
+    slides.forEach(function(s,k){
+      if (k===idx) { s.classList.remove('leaving'); s.classList.add('on'); }
+      else if (s.classList.contains('on')) { s.classList.remove('on'); s.classList.add('leaving'); clearTimeout(s._t); s._t = setTimeout(function(){ s.classList.remove('leaving'); }, 1100); }
+      var v = s.querySelector('video'); if (v) { if (k===idx) { var p=v.play(); if(p&&p.catch)p.catch(function(){}); } else v.pause(); }
+    });
+    segs.forEach(function(b,k){
+      b.classList.remove('on','run','static','done');
+      if (k < idx) b.classList.add('done');
+      if (k === idx) { b.classList.add('on'); b.classList.add(it.type==='embed' ? 'static' : 'run'); b.setAttribute('aria-current','true'); }
+      else b.removeAttribute('aria-current');
+      if (k === idx) { void b.offsetWidth; }
+    });
+    capEl.textContent = '';
+    if (it.link) { var a = document.createElement('a'); a.href=it.link; a.target='_blank'; a.rel='noopener'; a.textContent=it.label; capEl.appendChild(a); }
+    else capEl.textContent = it.alt;
+    cntEl.textContent = (idx+1) + ' / ' + items.length;
+    if (!first) { sheen.classList.remove('go'); void sheen.offsetWidth; sheen.classList.add('go'); }
+    first = false;
+  }
+  hero.querySelector('.prev').addEventListener('click', function(){ show(idx-1); });
+  hero.querySelector('.next').addEventListener('click', function(){ show(idx+1); });
+  hero.addEventListener('keydown', function(e){
+    if (e.key==='ArrowLeft'){ show(idx-1); e.preventDefault(); }
+    if (e.key==='ArrowRight'){ show(idx+1); e.preventDefault(); }
+  });
+  hero.addEventListener('mousemove', function(e){ var r = hero.getBoundingClientRect(); hero.style.setProperty('--mx', ((e.clientX-r.left)/r.width-.5)*2); hero.style.setProperty('--my', ((e.clientY-r.top)/r.height-.5)*2); });
+  hero.addEventListener('mouseleave', function(){ hero.style.setProperty('--mx',0); hero.style.setProperty('--my',0); });
+  var x0 = null;
+  stage.addEventListener('pointerdown', function(e){ x0 = e.clientX; });
+  stage.addEventListener('pointerup', function(e){ if (x0===null) return; var dx=e.clientX-x0; x0=null; if (Math.abs(dx)>48) show(dx<0 ? idx+1 : idx-1); });
+
+  var lb = document.createElement('dialog'); lb.id='herolb';
+  lb.innerHTML = '<button type="button" aria-label="Close">Close</button><img alt="">';
+  document.body.appendChild(lb);
+  var lbi = lb.querySelector('img');
+  function openLb(src, alt){ lbi.src=src; lbi.alt=alt||''; lb.showModal(); }
+  lb.querySelector('button').addEventListener('click', function(){ lb.close(); });
+  lb.addEventListener('click', function(e){ if (e.target===lb || e.target===lbi) lb.close(); });
+  show(0);
+})();
+</script>
+
+<script>
+(function(){
+  var bar = document.createElement('div'); bar.className = 'pg-bar'; document.body.appendChild(bar);
+  var tick = false;
+  function upd(){ var h = document.documentElement.scrollHeight - innerHeight; bar.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, scrollY / h) : 0) + ')'; tick = false; }
+  addEventListener('scroll', function(){ if (!tick) { tick = true; requestAnimationFrame(upd); } }, {passive:true}); upd();
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches || !('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function(es){ es.forEach(function(e){ if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:.1, rootMargin:'0px 0px -6% 0px'});
+  document.querySelectorAll('main section').forEach(function(sec){
+    [].slice.call(sec.children).forEach(function(k,i){
+      if (k.tagName === 'SCRIPT' || k.tagName === 'STYLE') return;
+      k.classList.add('rv'); k.style.setProperty('--d', Math.min(i,3)*60 + 'ms'); io.observe(k);
+    });
+  });
 })();
 </script>
 </body>
